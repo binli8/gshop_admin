@@ -31,23 +31,36 @@ export default {
 </script>
 
 <script lang="ts" setup>
+// 引入用户信息的仓库
 import { useUserInfoStore } from '@/stores/userInfo'
+// 引入的是表单组件标签el-form对象的类型
 import type { FormInstance } from 'element-plus'
+// 引入nextTick, ref, watch 
 import { nextTick, ref, watch } from 'vue'
+// 引入获取路由,路由器对象的函数
 import { useRoute, useRouter } from 'vue-router'
+// 获取用户信息的仓库对象
 const userInfoStore = useUserInfoStore()
+// 获取路由对象
 const route = useRoute()
+// 获取路由器对象
 const router = useRouter()
+// 收集账号和密码
 const loginForm = ref({
-  username: 'admin',
-  password: '111111'
+  username: 'admin',    //默认的账号
+  password: '111111'    //默认的密码
 })
+// 加载效果的标识
 const loading = ref(false)
+// 密码或者是文本框的类型
 const passwordType = ref('password')
+// 重定向地址
 const redirect = ref('')
+// 用来收集文本框的对象
 const passwordRef = ref<HTMLInputElement>()
+// 用来收集form表单的对象
 const formRef = ref<FormInstance>()
-
+// 用来校验账号的
 const validateUsername = (rule: any, value: any, callback: any) => {
   if (value.length < 4) {
     callback(new Error('用户名长度不能小于4位'))
@@ -55,6 +68,7 @@ const validateUsername = (rule: any, value: any, callback: any) => {
     callback()
   }
 }
+// 用来校验密码的
 const validatePassword = (rule: any, value: any, callback: any) => {
   if (value.length < 6) {
     callback(new Error('密码长度不能小于6位'))
@@ -62,15 +76,18 @@ const validatePassword = (rule: any, value: any, callback: any) => {
     callback()
   }
 }
-
+// 登录的校验规则
 const loginRules = {
+  // 用户名,必须的
   username: [{ required: true, validator: validateUsername }],
+  // 密码,必须的,失去焦点的时候开始校验
   password: [{ required: true, trigger: 'blur', validator: validatePassword }]
 }
-
+// 监视路由信息对象
 watch(
   route,
   () => {
+    // 如果query参数存在,把当前的地址存起来
     redirect.value = route.query && (route.query.redirect as string)
   },
   { immediate: true }
@@ -80,27 +97,33 @@ watch(
 切换密码的显示/隐藏
 */
 const showPwd = () => {
+  // 如果此时是密码框,点一下,变成文本框,否则变成密码框
   if (passwordType.value === 'password') {
     passwordType.value = 'text'
   } else {
     passwordType.value = 'password'
   }
   nextTick(() => {
+    // focus 获取焦点
     passwordRef.value?.focus()
   })
 }
 
-/* 
-点击登陆的回调
-*/
+// 点击按钮实现登录
 const handleLogin = async () => {
+  // 调用表单的验证规则,所有的表单验证都通过了,就会继续向后执行
   await formRef.value?.validate()
+  // 验证通过了,开启加载标识
   loading.value = true
+  // 取出账号和密码
   const { username, password } = loginForm.value
   try {
+    // 通过pinia调用登录的action,传入账号和密码
     await userInfoStore.login(username, password)
+    // 登录成功则跳转
     router.push({ path: redirect.value || '/' })
   } finally {
+    // 关闭加载的效果
     loading.value = false
   }
 }
