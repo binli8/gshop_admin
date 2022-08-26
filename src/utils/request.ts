@@ -2,7 +2,6 @@ import axios, { type AxiosResponse } from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import pinia from '@/stores/index';
 import { useUserInfoStore } from '../stores/userInfo';
-import { log } from 'console';
 
 /* 定义response对象的data接口 */
 interface ResponseData<T> {
