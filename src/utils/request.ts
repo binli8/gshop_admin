@@ -2,6 +2,7 @@ import axios, { type AxiosResponse } from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import pinia from '@/stores/index';
 import { useUserInfoStore } from '../stores/userInfo';
+import { log } from 'console';
 
 /* 定义response对象的data接口 */
 interface ResponseData<T> {
@@ -19,7 +20,15 @@ const service = axios.create({
 // 添加请求拦截器
 service.interceptors.request.use(
 	(config) => {
-    
+		// 获取用户信息仓库对象
+		const  useInfoStore = useUserInfoStore()
+		// 获取token
+		const token = useInfoStore.token
+		// 判断token是否存在
+		if (token) {
+			// 转类型
+			(config.headers as any) ['token'] = token
+		}
 		return config;
 	}
 );
