@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { getToken, removeToken, setToken } from '../utils/token-utils';
 import type { UserInfoState } from './interface';
-import {ElMessage} from 'element-plus'
-import {staticRoutes} from '@/router/routes'
+import { ElMessage } from 'element-plus'
+import { staticRoutes } from '@/router/routes'
 // 引入登录相关的接口(登录接口函数,获取用户信息的接口函数,退出的接口函数)
-import {loginApi,infoApi,logoutApi} from '@/api/login'
+import { loginApi, infoApi, logoutApi } from '@/api/acl/login'
 
 
 
@@ -14,26 +14,26 @@ import {loginApi,infoApi,logoutApi} from '@/api/login'
  */
 export const useUserInfoStore = defineStore('userInfo', {
   // 状态数据
-	state: (): UserInfoState => ({
+  state: (): UserInfoState => ({
     token: getToken() as string,
     name: '',
     avatar: '',
     menuRoutes: []
   }),
 
-	actions: {
+  actions: {
     // 登录的方法,传入用户名和密码
-    async login (username: string, password: string) {
-    // 登录,传入用户名和密码
-    const {token} = await loginApi(username,password)
-    // 储存token
-    this.token = token
-    // 储存token
-    setToken(token)
+    async login(username: string, password: string) {
+      // 登录,传入用户名和密码
+      const { token } = await loginApi(username, password)
+      // 储存token
+      this.token = token
+      // 储存token
+      setToken(token)
     },
 
     // 获取用户信息的方法
-    async getInfo () {
+    async getInfo() {
       const result = await infoApi()
       // 储存用户信息
       this.name = result.name       //用户名
@@ -42,7 +42,7 @@ export const useUserInfoStore = defineStore('userInfo', {
     },
 
     // 重置用户信息的方法
-    async reset () {
+    async reset() {
       if (this.name) {
         await logoutApi()
       }
@@ -53,5 +53,5 @@ export const useUserInfoStore = defineStore('userInfo', {
       this.name = ''
       this.avatar = ''
     },
-	},
+  },
 });

@@ -22,7 +22,7 @@ service.interceptors.request.use(
 		// 获取用户信息仓库对象
 		const userInfoStore = useUserInfoStore()
 		// 获取token
-		const token = userInfoStore
+		const token = userInfoStore.token
 		// 判断token是否存在
 		if (token) {
 			(config.headers as any)['token'] = token
