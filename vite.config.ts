@@ -13,7 +13,17 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // 会映射多个域名地址
     port: 8000, // 默认起始端口号
-    open: true // 自动打开浏览器访问
+    open: true, // 自动打开浏览器访问
+    proxy: {
+      '/app-dev': { // 代理所有以 '/app-dev'开头的请求路径
+        // 后台接口地址
+        target: ' http://gmall-h5-api.atguigu.cn',
+        // 服务器得到的就不是当前应用的域名了, 而是后台的域名
+        changeOrigin: true,
+        // 重写路径: 去掉路径中开头的'/dev-api'
+        rewrite: (path) => path.replace(/^\/app-dev/, ''),
+      },
+    },
   },
   css: {
     preprocessorOptions: {
