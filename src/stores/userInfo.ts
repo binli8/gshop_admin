@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { getToken, removeToken, setToken } from '../utils/token-utils';
 import type { UserInfoState } from './interface';
-import {ElMessage} from 'element-plus'
-import {staticRoutes} from '@/router/routes'
+import { ElMessage } from 'element-plus'
+import { staticRoutes } from '@/router/routes'
 
 
 /**
@@ -11,18 +11,18 @@ import {staticRoutes} from '@/router/routes'
  */
 export const useUserInfoStore = defineStore('userInfo', {
 
-	state: (): UserInfoState => ({
+  state: (): UserInfoState => ({
     token: getToken() as string,
     name: '',
     avatar: '',
     menuRoutes: []
   }),
 
-	actions: {
-    login (username: string, password: string) {
+  actions: {
+    login(username: string, password: string) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          if (username==='admin' && password==='111111') {
+          if (username === 'admin' && password === '111111') {
             const token = 'token-atguigu'
             setToken(token)
             this.token = token
@@ -35,18 +35,18 @@ export const useUserInfoStore = defineStore('userInfo', {
       })
     },
 
-    getInfo () {
+    getInfo() {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           this.name = 'admin'
           this.avatar = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
           this.menuRoutes = staticRoutes
-          resolve({name: this.name, avatar: this.avatar, token: this.token})
+          resolve({ name: this.name, avatar: this.avatar, token: this.token })
         }, 1000)
       })
     },
 
-    reset () {
+    reset() {
       // 删除local中保存的token
       removeToken()
       // 提交重置用户信息的mutation
@@ -54,5 +54,5 @@ export const useUserInfoStore = defineStore('userInfo', {
       this.name = ''
       this.avatar = ''
     },
-	},
+  },
 });
