@@ -17,8 +17,7 @@ export default defineConfig({
     proxy: {
       '/app-dev': { // 代理所有以 '/app-dev'开头的请求路径
         // 后台接口地址
-        target: 'http://sph-h5-api.atguigu.cn',
-            // http://gmall-h5-api.atguigu.cn
+        target: 'http://gmall-h5-api.atguigu.cn',
         // 服务器得到的就不是当前应用的域名了, 而是后台的域名
         changeOrigin: true,
         // 重写路径: 去掉路径中开头的'/dev-api'
