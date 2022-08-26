@@ -14,7 +14,7 @@ export const loginApi = (username:string,password:string) =>request.post<any,Log
     username,password})
 
 // 定义获取用户信息的接口函数
-export const GetUserInfoApi= () => request.get<any,LoginUserResponseModel>(Api.GetUserInfo)
+export const getUserInfoApi= () => request.get<any,LoginUserResponseModel>(Api.GetUserInfo)
 
 // 定义退出的接口函数
-export const LogoutApi = ()=>request.post<any,null>(Api.Logout)
+export const logoutApi = ()=>request.post<any,null>(Api.Logout)
