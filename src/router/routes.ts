@@ -20,6 +20,30 @@ import type { RouteRecordRaw } from 'vue-router';
       hidden: true
     }
   },
+  
+  {
+    path: '/404',
+    name: '404',
+    component: () => import('@/views/error/404.vue'),
+    meta: {
+      hidden: true
+    }
+  },
+
+  {
+    path: '/',
+    component: () => import('@/layout/index.vue'),
+    redirect: '/home',
+    children: [{
+      path: 'home',
+      name: 'Home',
+      component: () => import('@/views/home/index.vue'),
+      meta: { 
+        title: '首页', 
+        icon: 'ele-HomeFilled', 
+      }
+    }]
+  },
   {
     path: '/product',
     name: 'product',
@@ -60,29 +84,6 @@ import type { RouteRecordRaw } from 'vue-router';
         meta:{title:'SPU管理'}
       },
     ]
-  },
-  {
-    path: '/404',
-    name: '404',
-    component: () => import('@/views/error/404.vue'),
-    meta: {
-      hidden: true
-    }
-  },
-
-  {
-    path: '/',
-    component: () => import('@/layout/index.vue'),
-    redirect: '/home',
-    children: [{
-      path: 'home',
-      name: 'Home',
-      component: () => import('@/views/home/index.vue'),
-      meta: { 
-        title: '首页', 
-        icon: 'ele-HomeFilled', 
-      }
-    }]
   },
 
   /* 匹配任意的路由 必须最后注册 */
