@@ -55,12 +55,18 @@
       draggable="Dialog"
       :title="trademark.id ? '修改品牌' : '添加品牌'"
     >
-      <el-form :model="trademark" style="width: 80%" label-width="100px">
-        <el-form-item label="品牌名称">
+      <el-form
+        ref="ruleFormRef"
+        :rules="rules"
+        :model="trademark"
+        style="width: 80%"
+        label-width="100px"
+      >
+        <el-form-item label="品牌名称" prop="tmName">
           <el-input v-model="trademark.tmName" autocomplete="off" />
         </el-form-item>
         <!-- 上传图片的一项 -->
-        <el-form-item label="品牌LOGO">
+        <el-form-item label="品牌LOGO" prop="logoUrl">
           <el-upload
             class="avatar-uploader"
             :action="`${BASE_URL}/admin/product/fileUpload`"
@@ -108,7 +114,13 @@ export default {
 <script lang="ts" setup>
 // 引入UI组件库图标
 import { Plus, Edit, Delete, Loading } from "@element-plus/icons-vue";
-import { ElMessage, UploadProps } from "element-plus";
+import {
+  ElMessage,
+  uploadContentProps,
+  UploadProps,
+  FormInstance,
+  FormRules,
+} from "element-plus";
 
 // 引入品牌相关的数据的接口类型
 import type {
@@ -168,6 +180,9 @@ const showAdd = () => {
   trademark.logoUrl = "";
   dialogFormVisible.value = true;
   trademark.id = undefined;
+    //清理所有的表单验证信息
+    // formRef.value?.clearValidate()  //清理
+    formRef.value?.resetFields()      //重置   
 };
 // 点击修改按键,显示对话框
 const showUPdate = (row: TrademarkModel) => {
@@ -175,8 +190,71 @@ const showUPdate = (row: TrademarkModel) => {
   Object.assign(trademark, row);
   dialogFormVisible.value = true;
 };
+// 图片加载的效果标识
+const uploadLoading = ref<boolean>(false);
 // 对话框图片的根路径地址
 const BASE_URL = import.meta.env.VITE_API_URL;
+// 存储照片
+const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
+  // 存储上传成功的图片和地址
+  trademark.logoUrl = res.data;
+  // 关闭加载的效果
+  uploadLoading.value = false;
+  // 清理掉图片的验证信息
+    formRef.value?.clearValidate('logoUrl')
+};
+const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
+  // 现在两种图片的类型
+  const isJpeOrPeng = ["image/jpeg", "image/png"].includes(file.type);
+  //  限制图片的大小
+  const isImageSize = file.size / 1024 < 50;
+  // 判断图片的类型
+  if (!isJpeOrPeng) {
+    ElMessage.error("必须上传jpg或者png格式的图片");
+    return false;
+  }
+  // 判断图片的大小
+  if (!isImageSize) {
+    ElMessage.error("上传的图片必须小于50k");
+    return false;
+  }
+  // 开启图片加载效果
+  uploadLoading.value = true;
+};
+// 表单验证
+const formRef = ref<FormInstance>()
+// 验证规则
+const rules = reactive<FormRules>({
+    // 针对品牌命成的验证规则
+     tmName: [
+    {
+      required: true,
+      message: '必须输入品牌名称',
+    },
+    {
+        min:2,
+        max:10,
+        message:'品牌名必须在2-10个字之间',
+        trigger:'blur'
+    }
+  ],
+  logoUrl: [
+    {
+      required: true,
+      message: '必须上传图片',
+      trigger: 'change',
+    },
+  ],  
+})
+
+// 表单验证 添加或者修改品牌操作
+const addOrUpdate = () =>{
+    formRef.value?.validate((valid)=>{
+        // 表单验证不通过,啥也不做
+        if(!valid) return
+        // 表单验证通过
+    })
+}
 // 页码加载后的钩子
 onMounted(() => {
   getTrademarkList();
