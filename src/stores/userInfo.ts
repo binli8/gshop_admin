@@ -36,6 +36,7 @@ export const useUserInfoStore = defineStore('userInfo', {
       // 存储用户信息
       this.name = result.name     //用户名
       this.avatar = result.avatar // 头像
+      this.menuRoutes = staticRoutes
       // 存储按钮和角色的路由的相关信息
     },
 
