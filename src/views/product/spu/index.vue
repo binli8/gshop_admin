@@ -1,5 +1,5 @@
 <template>
-    <div><h2>Spu管理</h2></div>
+    <div><h2>SPU管理</h2></div>
 </template>
 <script lang="ts">
 export default {
