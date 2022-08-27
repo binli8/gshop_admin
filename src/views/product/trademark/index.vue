@@ -3,7 +3,7 @@
     <template #header>
       <!-- 添加按钮 -->
       <div>
-        <el-button type="primary" :icon="Plus">添加</el-button>
+        <el-button type="primary" :icon="Plus" @click="showAdd">添加</el-button>
       </div>
     </template>
     <!-- 表格 -->
@@ -22,8 +22,13 @@
         </template>
       </el-table-column>
       <el-table-column prop="address" label="操作">
-        <template v-slot="scope">
-          <el-button size="small" type="warning" :icon="Edit"></el-button>
+        <template v-slot="{ row }">
+          <el-button
+            size="small"
+            type="warning"
+            :icon="Edit"
+            @click="showUpdate(row)"
+          ></el-button>
           <el-button size="small" type="danger" :icon="Delete"></el-button>
         </template>
       </el-table-column>
@@ -32,16 +37,66 @@
     <el-pagination
       v-model:currentPage="current"
       v-model:page-size="pageSize"
-      :page-sizes="[3,6,9]"
+      :page-sizes="[3, 6, 9]"
       :small="small"
       background
       layout="  prev, pager, next, jumper,->,sizes,total"
       :total="total"
-      @size-change="getTrademarkList(1,value)"
-      @current-change="getTrademarkList(value,pageSize)"
-      style="margin-top:20px"
+      @size-change="getTrademarkList(1, value)"
+      @current-change="getTrademarkList(value, pageSize)"
+      style="margin-top: 20px"
     />
     <!-- 对话框 -->
+
+    <el-dialog
+      v-model="dialogFormVisible"
+      draggable="boolean"
+      :title="trademark.id ? '修改品牌' : '添加品牌'"
+    >
+      <el-form
+        :model="trademark"
+        style="width: 80%"
+        label-width="100px"
+        ref="formRef"
+        :rules="rules"
+      >
+        <el-form-item label="品牌名称" prop="tmName">
+          <el-input v-model="trademark.tmName" autocomplete="off" />
+        </el-form-item>
+        <!-- 上传图片的一项 -->
+        <el-form-item label="品牌LOGO" prop="logoUrl">
+          <el-upload
+            class="avatar-uploader"
+            :action="`${BASE_URL}//admin/product/fileUpload`"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <!-- 显示加载的效果 -->
+            <el-icon v-if="uploadloading" class="avatar-uploader-icon">
+              <Loading
+            /></el-icon>
+            <!-- 显示图片 -->
+            <img
+              v-else-if="trademark.logoUrl"
+              :src="trademark.logoUrl"
+              class="avatar"
+            />
+            <!-- 显示加号 -->
+            <el-icon v-else class="avatar-uploader-icon"> <Plus /> </el-icon>
+            <template #tip>
+              <div class="el-upload__tip">只能上传jpg/png文件,且不超过50kb</div>
+            </template>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="addOrUpdate">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </el-card>
 </template>
 <script lang="ts">
@@ -51,20 +106,19 @@ export default {
 </script>
 <script lang="ts" setup>
 // 引入图标
-import { Plus, Edit, Delete } from "@element-plus/icons-vue";
+import { Plus, Edit, Delete, Loading } from "@element-plus/icons-vue";
+import type { UploadProps, FormInstance, FormRules } from "element-plus";
+import { ElMessage } from "element-plus";
 // 引入品牌相关的数据的接口类型
 import {
   TrademarkModel,
   TrademarkListModel,
-  TrademarkPageListModel,
 } from "@/api/product/model/trademarkModel";
 // 引入ref
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 // 引入品牌相关的接口函数
-import {
-  getTrademarkListAllApi,
-  getTrademarkListApi,
-} from "@/api/product/trademark";
+import { getTrademarkListApi } from "@/api/product/trademark";
+import { valid } from "mockjs";
 // 定义数组,用来收集品牌列表的数组数据信息
 const trademarkList = ref<TrademarkListModel>([]);
 const current = ref<number>(1); //页码数
@@ -72,6 +126,13 @@ const pageSize = ref<number>(3); //每条的页数
 const total = ref<number>(0); //总页数
 // 定义加载标识
 const loading = ref<boolean>(false);
+// 定义一个标识,用来控制对话框是否显示的
+const dialogFormVisible = ref(false);
+// 定义品牌对象,并设置内部的名称和logo地址为空
+const trademark = reactive<TrademarkModel>({
+  tmName: "", //品牌的名字
+  logoUrl: "", //品牌的地址
+});
 // 定义一个函数,用来获取品牌列表的数据
 const getTrademarkList = async (
   page: number = current.value, //页码数
@@ -84,17 +145,126 @@ const getTrademarkList = async (
   loading.value = true;
   // 调用接口函数
   const result = await getTrademarkListApi(page, limit);
+  // console.log(result);
   // 关闭加载效果
   loading.value = false;
   //   更新数据
-  console.log(result);
-
   trademarkList.value = result.records;
   total.value = result.total;
 };
 onMounted(() => {
   getTrademarkList();
 });
+// 点击添加按钮,显示对话框
+const showAdd = () => {
+  // 清空原有的数据
+  trademark.tmName = "";
+  trademark.logoUrl = "";
+  trademark.id = undefined;
+  dialogFormVisible.value = true;
+  // 清除所有的表单验证信息
+  formRef.value?.clearValidate(); //清理
+  // formRef.value?.resetFields()  //重置
+};
+// 点击按钮,显示对话框
+const showUpdate = (row: TrademarkModel) => {
+  // 把当前点击的这一行品牌对象的数据拷贝一份,保存到trademark对象中
+  Object.assign(trademark, row);
+  dialogFormVisible.value = true;
+};
+// 图片加载的效果标识
+const uploadloading = ref<boolean>(false);
+// 图片的根路径地址
+const BASE_URL = import.meta.env.VITE_API_URL;
+//
+const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
+  console.log(res);
+  // 存储上传成功的图片的地址
+  trademark.logoUrl = res.data;
+  // 关闭加载的效果
+  uploadloading.value = false;
+  // 清理图片的验证信息
+  formRef.value?.clearValidate("logoUrl");
+};
+
+const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
+  console.log(file);
+  // 限制两种图片的类型
+  const isJpegOrPng = ["image/jpeg", "image/png"].includes(file.type);
+  // 限制图片的大小
+  const isImageSize = file.size / 1024 < 50;
+  // 判断图片的类型
+  if (!isJpegOrPng) {
+    ElMessage.error("必须上传jpg或png格式的图片");
+    return false;
+  }
+  if (!isImageSize) {
+    ElMessage.error("上传的图片大小不能超过50k");
+    return false;
+  }
+  // 开启图片加载效果
+  uploadloading.value = true;
+};
+
+// 添加或者修改品牌操作
+const addOrUpdate = () => {
+  formRef.value?.validate((valid) => {
+    // 表单验证不通过,什么也不做
+    if (!valid) return;
+    // 表单验证通过
+  });
+};
+
+// 定义用来收集表单form对象的
+const formRef = ref<FormInstance>();
+//  验证规则
+const rules = reactive<FormRules>({
+  // 针对品牌名称的验证规则
+  tmName: [
+    { required: true, message: "必须输入品牌名称" },
+   {
+      min: 2,
+      max: 10,
+      message: '品牌的名称必须在2到10个字之间',
+      trigger: 'blur'
+    }
+  ],
+  logoUrl: [
+    {
+      required: true,
+      message: "必须上传图片",
+      trigger: "change",
+    },
+  ],
+});
 </script>
 <style scoped>
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
+}
 </style>

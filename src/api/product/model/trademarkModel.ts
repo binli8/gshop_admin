@@ -2,7 +2,7 @@
 export interface TrademarkModel{
     id?:number
     tmName:string
-    logUrl:string
+    logoUrl:string
 }
 // 定义品牌对象数组的接口类型
 export type TrademarkListModel = TrademarkModel[]
