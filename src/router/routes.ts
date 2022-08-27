@@ -20,7 +20,47 @@ import type { RouteRecordRaw } from 'vue-router';
       hidden: true
     }
   },
-
+  {
+    path: '/product',
+    name: 'product',
+    component: () => import('@/layout/index.vue'),
+    meta: {
+      title:'商品管理',
+      icon:'ele-ShoppingBag',
+    },
+    children:[
+      {
+        path:'category/list',
+        name:'Category',
+        component:() => import('@/views/product/category/index.vue'),
+        meta:{title:'分类管理'}
+      },
+      {
+        path:'trademark/list',
+        name:'Trademark',
+        component:()=>import('@/views/product/trademark/index.vue'),
+        meta:{title:'品牌管理'}
+      },
+      {
+        path:'attr/list',
+        name:'Attr',
+        component:()=>import('@/views/product/attr/index.vue'),
+        meta:{title:'平台属性管理'}
+      },
+      {
+        path:'sku/list',
+        name:'Sku',
+        component:()=>import('@/views/product/sku/index.vue'),
+        meta:{title:'SKU管理'}
+      },
+      {
+        path:'spu/list',
+        name:'Spu',
+        component:()=>import('@/views/product/spu/index.vue'),
+        meta:{title:'SPU管理'}
+      },
+    ]
+  },
   {
     path: '/404',
     name: '404',
