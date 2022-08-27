@@ -56,7 +56,7 @@
       :title="trademark.id ? '修改品牌' : '添加品牌'"
     >
       <el-form
-        ref="ruleFormRef"
+        ref="formRef"
         :rules="rules"
         :model="trademark"
         style="width: 80%"
@@ -98,9 +98,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false"
-            >确认</el-button
-          >
+          <el-button type="primary" @click="addOrUpdate">确认</el-button>
         </span>
       </template>
     </el-dialog>
