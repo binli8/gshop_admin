@@ -130,10 +130,12 @@ const loading = ref<boolean>(false);
 // 定义一个标识,用来控制对话框是否显示的
 const dialogFormVisible = ref(false);
 // 定义品牌对象,并设置内部的名称和logo地址为空
-const trademark = reactive<TrademarkModel>({
-  tmName: "", //品牌的名字
-  logoUrl: "", //品牌的地址
-});
+const initTrademark = () =>({id:undefined,tmName:'',logoUrl:''})
+// const trademark = reactive<TrademarkModel>({
+//   tmName: "", //品牌的名字
+//   logoUrl: "", //品牌的地址
+// });
+const trademark  = reactive<TrademarkModel>(initTrademark())
 // 定义一个函数,用来获取品牌列表的数据
 const getTrademarkList = async (
   page: number = current.value, //页码数
@@ -159,14 +161,16 @@ onMounted(() => {
 // 点击添加按钮,显示对话框
 const showAdd = () => {
   // 清空原有的数据
-  trademark.tmName = "";
-  trademark.logoUrl = "";
-  trademark.id = undefined;
-  dialogFormVisible.value = true;
+  // trademark.tmName = "";
+  // trademark.logoUrl = "";
+  // trademark.id = undefined;
+  // dialogFormVisible.value = true;
+  Object.assign(trademark,initTrademark())
+  dialogFormVisible.value = true
   // 清除所有的表单验证信息
   nextTick(() => {
-    // formRef.value?.clearValidate(); //清理
-    formRef.value?.resetFields()  //重置
+    formRef.value?.clearValidate(); //清理
+    // formRef.value?.resetFields()  //重置
   });
 };
 // 点击按钮,显示对话框
@@ -232,17 +236,27 @@ const addOrUpdate = () => {
 
 // 定义用来收集表单form对象的
 const formRef = ref<FormInstance>();
+// 验证品牌名称
+const validateTmName = (rule:any,value:any,callback:any) =>{
+  if (value.length< 2|| value.length>10) {
+    callback('品牌名称必须在2到10个字之间')
+  } else{
+    callback()
+  }
+}
+// 
 //  验证规则
 const rules = reactive<FormRules>({
   // 针对品牌名称的验证规则
   tmName: [
-    { required: true, message: "必须输入品牌名称" },
-    {
-      min: 2,
-      max: 10,
-      message: "品牌的名称必须在2到10个字之间",
-      trigger: "blur",
-    },
+    { required: true, message: "必须输入品牌名称",trigger:"blur"},
+    {validator:validateTmName,trigger:'blue'}
+    // {
+    //   min: 2,
+    //   max: 10,
+    //   message: "品牌的名称必须在2到10个字之间",
+    //   trigger: "blur",
+    // },
   ],
   logoUrl: [
     {
