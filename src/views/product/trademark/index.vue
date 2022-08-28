@@ -215,9 +215,9 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
 
 // 添加或者修改品牌
 const addOrUpdate = () => {
-  formRef.value?.validate(async(valid) => {
+  formRef.value?.validate(async (valid) => {
     // 表单验证不通过,什么也不做
-    if (!valid) return;
+    if (!valid) return
     // 表单验证通过
     try {
       // 调用接口
@@ -284,9 +284,12 @@ const deleteBrand = (row:TrademarkModel)=>{
       if (trademarkList.value.length === 1 && current.value > 1) {
         current.value -= 1
       }
-    })
-    // 刷新
+      // 刷新
     getTrademarkList()
+    // 提示信息
+      ElMessage.success('获取品牌分页列表成功')
+    })
+    
     .catch(() => {})
 }
 
