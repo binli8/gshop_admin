@@ -7,13 +7,7 @@
       </div>
     </template>
     <!-- 表格 -->
-    <el-table
-      v-loading="loading"
-      :data="trademarkList"
-      stripe
-      border
-      style="width: 100%"
-    >
+    <el-table v-loading="loading" :data="trademarkList" stripe border>
       <el-table-column type="index" label="序号" width="80" align="center" />
       <el-table-column prop="tmName" label="品牌名称" />
       <el-table-column label="品牌LOGO">
@@ -29,7 +23,12 @@
             :icon="Edit"
             @click="showUpdate(row)"
           ></el-button>
-          <el-button size="small" type="danger" :icon="Delete" @click="deleteBrand(row)"></el-button>
+          <el-button
+            size="small"
+            type="danger"
+            :icon="Delete"
+            @click="deleteBrand(row)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -107,7 +106,7 @@ export default {
 <script lang="ts" setup>
 // 引入图标
 import { Plus, Edit, Delete, Loading } from "@element-plus/icons-vue";
-import type { UploadProps, FormInstance, FormRules, } from "element-plus";
+import type { UploadProps, FormInstance, FormRules } from "element-plus";
 import { ElMessage, ElMessageBox } from "element-plus";
 // 引入品牌相关的数据的接口类型
 import {
@@ -115,10 +114,13 @@ import {
   TrademarkListModel,
 } from "@/api/product/model/trademarkModel";
 // 引入ref
-import { ref, onMounted, reactive,nextTick } from "vue";
+import { ref, onMounted, reactive, nextTick } from "vue";
 // 引入品牌相关的接口函数
-import { getTrademarkListApi,addOrUpdateTrademarkApi,deleteTrademarkByIdApi } from "@/api/product/trademark";
-
+import {
+  getTrademarkListApi,
+  addOrUpdateTrademarkApi,
+  deleteTrademarkByIdApi,
+} from "@/api/product/trademark";
 
 // 定义数组,用来收集品牌列表的数组数据信息
 const trademarkList = ref<TrademarkListModel>([]);
@@ -130,12 +132,12 @@ const loading = ref<boolean>(false);
 // 定义一个标识,用来控制对话框是否显示的
 const dialogFormVisible = ref(false);
 // 定义品牌对象,并设置内部的名称和logo地址为空
-const initTrademark = () =>({id:undefined,tmName:'',logoUrl:''})
+const initTrademark = () => ({ id: undefined, tmName: "", logoUrl: "" });
 // const trademark = reactive<TrademarkModel>({
 //   tmName: "", //品牌的名字
 //   logoUrl: "", //品牌的地址
 // });
-const trademark  = reactive<TrademarkModel>(initTrademark())
+const trademark = reactive<TrademarkModel>(initTrademark());
 // 定义一个函数,用来获取品牌列表的数据
 const getTrademarkList = async (
   page: number = current.value, //页码数
@@ -165,8 +167,8 @@ const showAdd = () => {
   // trademark.logoUrl = "";
   // trademark.id = undefined;
   // dialogFormVisible.value = true;
-  Object.assign(trademark,initTrademark())
-  dialogFormVisible.value = true
+  Object.assign(trademark, initTrademark());
+  dialogFormVisible.value = true;
   // 清除所有的表单验证信息
   nextTick(() => {
     formRef.value?.clearValidate(); //清理
@@ -175,6 +177,7 @@ const showAdd = () => {
 };
 // 点击按钮,显示对话框
 const showUpdate = (row: TrademarkModel) => {
+  formRef.value?.clearValidate();
   // 把当前点击的这一行品牌对象的数据拷贝一份,保存到trademark对象中
   Object.assign(trademark, row);
   dialogFormVisible.value = true;
@@ -217,19 +220,19 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
 const addOrUpdate = () => {
   formRef.value?.validate(async (valid) => {
     // 表单验证不通过,什么也不做
-    if (!valid) return
+    if (!valid) return;
     // 表单验证通过
     try {
       // 调用接口
-      await addOrUpdateTrademarkApi(trademark)
+      await addOrUpdateTrademarkApi(trademark);
       // 提示信息
-      ElMessage.success('操作成功')
+      ElMessage.success("操作成功");
       // 刷新
-      getTrademarkList(trademark.id?current.value:1)
+      getTrademarkList(trademark.id ? current.value : 1);
       // 关闭对话框
-      dialogFormVisible.value = false
-    } catch (error:any) {
-      ElMessage.error('操作失败',error)
+      dialogFormVisible.value = false;
+    } catch (error: any) {
+      ElMessage.error("操作失败", error);
     }
   });
 };
@@ -237,20 +240,20 @@ const addOrUpdate = () => {
 // 定义用来收集表单form对象的
 const formRef = ref<FormInstance>();
 // 验证品牌名称
-const validateTmName = (rule:any,value:any,callback:any) =>{
-  if (value.length< 2|| value.length>10) {
-    callback('品牌名称必须在2到10个字之间')
-  } else{
-    callback()
+const validateTmName = (rule: any, value: any, callback: any) => {
+  if (value.length < 2 || value.length > 10) {
+    callback("品牌名称必须在2到10个字之间");
+  } else {
+    callback();
   }
-}
-// 
+};
+//
 //  验证规则
 const rules = reactive<FormRules>({
   // 针对品牌名称的验证规则
   tmName: [
-    { required: true, message: "必须输入品牌名称",trigger:"blur"},
-    {validator:validateTmName,trigger:'blue'}
+    { required: true, message: "必须输入品牌名称", trigger: "blur" },
+    { validator: validateTmName, trigger: "blue" },
     // {
     //   min: 2,
     //   max: 10,
@@ -268,31 +271,29 @@ const rules = reactive<FormRules>({
 });
 
 // 定义删除品牌的回调
-const deleteBrand = (row:TrademarkModel)=>{
-  ElMessageBox.confirm(`您确认删除${row.tmName}吗`,'提示',{
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
-    .then(async() => {
-      await deleteTrademarkByIdApi(row.id as number)
+const deleteBrand = (row: TrademarkModel) => {
+  ElMessageBox.confirm(`您确认删除${row.tmName}吗`, "提示", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      await deleteTrademarkByIdApi(row.id as number);
       // 提示信息
-      ElMessage.success('操作成功')
+      ElMessage.success("操作成功");
       // 如果此时是当前这一页是第一页,那么删除数据后,直接刷新就可以了,如果此时不是第一页,而且,数据只剩下一条
       // 删除后此时应该回到上一页,进行刷新
       if (trademarkList.value.length === 1 && current.value > 1) {
-        current.value -= 1
+        current.value -= 1;
       }
       // 刷新
-    getTrademarkList()
-    // 提示信息
-      ElMessage.success('获取品牌分页列表成功')
+      getTrademarkList();
+      // 提示信息
+      ElMessage.success("获取品牌分页列表成功");
     })
-    
-    .catch(() => {})
-}
 
+    .catch(() => {});
+};
 </script>
 
 <style scoped>
