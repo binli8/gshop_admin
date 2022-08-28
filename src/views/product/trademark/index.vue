@@ -126,9 +126,10 @@ import type {
   TrademarkModel,
 } from "@/api/product/model/trademarkModel";
 // 引入 ref
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, nextTick } from "vue";
 // 引入品牌相关的接口函数
 import { getTrademarkListApi } from "@/api/product/trademark";
+
 // 定义数组,用来收集品牌列表的数组数据信息
 const trademarkList = ref<TrademarkListModel>([]);
 const current = ref<number>(1); //页面数
@@ -139,10 +140,13 @@ const loading = ref<Boolean>(false);
 // 定义一个标识,用来控制对话框是否显示的
 const dialogFormVisible = ref(false);
 // 定义品牌对象,并设置内部的名称和logo地址为空
-const trademark = reactive<TrademarkModel>({
-  tmName: "", //品牌的名字
-  logoUrl: "", //品牌的地址
-});
+const initTrademark = () => ({ tmName: "", logoUrl: "", id: undefined });
+const trademark = reactive<TrademarkModel>(initTrademark())
+// const trademark = reactive<TrademarkModel>({
+//   tmName: "", //品牌的名字
+//   logoUrl: "", //品牌的地址
+// });
+
 // 定义一个函数,用来获取品牌列表的数据
 const getTrademarkList = async (
   page: number = current.value,
@@ -174,19 +178,23 @@ const getTrademarkList = async (
 // 点击添加按钮,显示对话框
 const showAdd = () => {
   // 清空原有的数据
-  trademark.tmName = "";
-  trademark.logoUrl = "";
+  // trademark.tmName = "";
+  // trademark.logoUrl = "";
+  // trademark.id = undefined;
+  Object.assign(trademark, initTrademark());
   dialogFormVisible.value = true;
-  trademark.id = undefined;
-    //清理所有的表单验证信息
-    // formRef.value?.clearValidate()  //清理
-    formRef.value?.resetFields()      //重置   
+  //清理所有的表单验证信息
+  nextTick(() => {
+    formRef.value?.clearValidate(); //清理
+    // formRef.value?.resetFields(); //重置
+  });
 };
 // 点击修改按键,显示对话框
 const showUPdate = (row: TrademarkModel) => {
   // 把当前点击的这一行品牌对象的数据拷贝一份,保存到trademark对象中
   Object.assign(trademark, row);
   dialogFormVisible.value = true;
+  formRef.value?.clearValidate(); //清理
 };
 // 图片加载的效果标识
 const uploadLoading = ref<boolean>(false);
@@ -199,7 +207,7 @@ const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
   // 关闭加载的效果
   uploadLoading.value = false;
   // 清理掉图片的验证信息
-    formRef.value?.clearValidate('logoUrl')
+  formRef.value?.clearValidate("logoUrl");
 };
 const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
   // 现在两种图片的类型
@@ -220,39 +228,39 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
   uploadLoading.value = true;
 };
 // 表单验证
-const formRef = ref<FormInstance>()
+const formRef = ref<FormInstance>();
 // 验证规则
 const rules = reactive<FormRules>({
-    // 针对品牌命成的验证规则
-     tmName: [
+  // 针对品牌命成的验证规则
+  tmName: [
     {
       required: true,
-      message: '必须输入品牌名称',
+      message: "必须输入品牌名称",
     },
     {
-        min:2,
-        max:10,
-        message:'品牌名必须在2-10个字之间',
-        trigger:'blur'
-    }
+      min: 2,
+      max: 10,
+      message: "品牌名必须在2-10个字之间",
+      trigger: "blur",
+    },
   ],
   logoUrl: [
     {
       required: true,
-      message: '必须上传图片',
-      trigger: 'change',
+      message: "必须上传图片",
+      trigger: "change",
     },
-  ],  
-})
+  ],
+});
 
 // 表单验证 添加或者修改品牌操作
-const addOrUpdate = () =>{
-    formRef.value?.validate((valid)=>{
-        // 表单验证不通过,啥也不做
-        if(!valid) return
-        // 表单验证通过
-    })
-}
+const addOrUpdate = () => {
+  formRef.value?.validate((valid) => {
+    // 表单验证不通过,啥也不做
+    if (!valid) return;
+    // 表单验证通过
+  });
+};
 // 页码加载后的钩子
 onMounted(() => {
   getTrademarkList();
