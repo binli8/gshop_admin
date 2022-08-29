@@ -11,8 +11,8 @@ import type { RouteRecordRaw } from 'vue-router';
 /**
  * 静态路由（默认路由）
  */
- export const staticRoutes: Array<RouteRecordRaw> = [
-	{
+export const staticRoutes: Array<RouteRecordRaw> = [
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/login/index.vue'),
@@ -38,20 +38,74 @@ import type { RouteRecordRaw } from 'vue-router';
       path: 'home',
       name: 'Home',
       component: () => import('@/views/home/index.vue'),
-      meta: { 
-        title: '首页', 
-        icon: 'ele-HomeFilled', 
+      meta: {
+        title: '首页',
+        icon: 'ele-HomeFilled',
       }
     }]
   },
 
-  /* 匹配任意的路由 必须最后注册 */
-  { 
-    path: '/:pathMatch(.*)', 
-    name: 'Any',
-    redirect: '/404', 
+  /* 商品管理  */
+  {
+    path: '/product',
+    name: 'prdouct',
+    component: () => import('@/layout/index.vue'),
+    redirect: '/product/category/list',
     meta: {
-      hidden: true 
+      title: '商品管理',
+      icon: 'ele-ShoppingBag'
+    },
+    children: [
+      {
+        name: 'Category',
+        path: 'category/list',
+        component: () => import('@/views/product/category/index.vue'),
+        meta: {
+          title: '分类管理'
+        },
+      },
+      {
+        name: 'Trademark',
+        path: 'trademark/list',
+        component: () => import('@/views/product/trademark/index.vue'),
+        meta: {
+          title: '品牌管理'
+        },
+      },
+      {
+        name: 'Attr',
+        path: 'attr/list',
+        component: () => import('@/views/product/attr/index.vue'),
+        meta: {
+          title: '平台属性管理'
+        },
+      },
+      {
+        name: 'Spu',
+        path: 'spu/list',
+        component: () => import('@/views/product/spu/index.vue'),
+        meta: {
+          title: 'SPU管理'
+        },
+      },
+      {
+        name: 'Sku',
+        path: 'sku/list',
+        component: () => import('@/views/product/sku/index.vue'),
+        meta: {
+          title: 'Sku管理'
+        },
+      },
+    ]
+  },
+
+  /* 匹配任意的路由 必须最后注册 */
+  {
+    path: '/:pathMatch(.*)',
+    name: 'Any',
+    redirect: '/404',
+    meta: {
+      hidden: true
     }
   }
 ];
