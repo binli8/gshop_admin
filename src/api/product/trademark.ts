@@ -38,7 +38,7 @@ export const addTrademarkApi = (trademark: TrademarkModel) => request.post<any, 
 // 修改品牌的接口地址的接口函数
 export const updateTrademarkApi = (trademark: TrademarkModel) => request.put<any, null>(Api.UpdateTrademark, trademark)
 // 根据页码和每页的条数获取品牌对象数组数据的接口函数
-export const getTrademarkListApi = (page: number, limit: number) => request.get<any, TrademarkPageListModel>(Api.GetTrademarkListBykeyword + `${page}${limit}`)
+export const getTrademarkListApi = (page: number, limit: number) => request.get<any, TrademarkPageListModel>(Api.GetTrademarkList + `${page}/${limit}`)
 
 // 新增或者修改品牌对象
 export const addOrUpdateTrademarkApi = (trademark: TrademarkModel) => {
