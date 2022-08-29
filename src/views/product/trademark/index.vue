@@ -28,7 +28,12 @@
             :icon="Edit"
             @click="showUPdate(row)"
           ></el-button>
-          <el-button size="small" type="danger" :icon="Delete"></el-button>
+          <el-button
+            size="small"
+            type="danger"
+            :icon="Delete"
+            @click="deleteOperation(row)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -118,8 +123,8 @@ import {
   UploadProps,
   FormInstance,
   FormRules,
+  ElMessageBox,
 } from "element-plus";
-
 // 引入品牌相关的数据的接口类型
 import type {
   TrademarkListModel,
@@ -128,20 +133,26 @@ import type {
 // 引入 ref
 import { onMounted, reactive, ref, nextTick } from "vue";
 // 引入品牌相关的接口函数
-import { getTrademarkListApi } from "@/api/product/trademark";
+import {
+  getTrademarkListApi,
+  addOrUpdateTrademarkApi,
+} from "@/api/product/trademark";
 
 // 定义数组,用来收集品牌列表的数组数据信息
 const trademarkList = ref<TrademarkListModel>([]);
 const current = ref<number>(1); //页面数
 const pageSize = ref<number>(3); // 每页的条数
 const total = ref<number>(0); // 总条数
+
 // 定义加载效果的标识
 const loading = ref<Boolean>(false);
+
 // 定义一个标识,用来控制对话框是否显示的
 const dialogFormVisible = ref(false);
+
 // 定义品牌对象,并设置内部的名称和logo地址为空
 const initTrademark = () => ({ tmName: "", logoUrl: "", id: undefined });
-const trademark = reactive<TrademarkModel>(initTrademark())
+const trademark = reactive<TrademarkModel>(initTrademark());
 // const trademark = reactive<TrademarkModel>({
 //   tmName: "", //品牌的名字
 //   logoUrl: "", //品牌的地址
@@ -189,17 +200,19 @@ const showAdd = () => {
     // formRef.value?.resetFields(); //重置
   });
 };
+
 // 点击修改按键,显示对话框
 const showUPdate = (row: TrademarkModel) => {
   // 把当前点击的这一行品牌对象的数据拷贝一份,保存到trademark对象中
   Object.assign(trademark, row);
   dialogFormVisible.value = true;
-  formRef.value?.clearValidate(); //清理
 };
 // 图片加载的效果标识
 const uploadLoading = ref<boolean>(false);
+
 // 对话框图片的根路径地址
 const BASE_URL = import.meta.env.VITE_API_URL;
+
 // 存储照片
 const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
   // 存储上传成功的图片和地址
@@ -209,8 +222,21 @@ const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
   // 清理掉图片的验证信息
   formRef.value?.clearValidate("logoUrl");
 };
+
+// 表单验证:
+// 1.定义用来收集表单的form对象
+const formRef = ref<FormInstance>();
+// 2.验证品牌名称
+const validtateTmName = (rule: any, value: any, callback: any) => {
+  if (value.length < 2 || value.length > 10) {
+    callback("品牌名必须在2-10个字之间");
+  } else {
+    callback();
+  }
+};
+// 3.验证品牌LOGO
 const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
-  // 现在两种图片的类型
+  // 限制两种图片的类型
   const isJpeOrPeng = ["image/jpeg", "image/png"].includes(file.type);
   //  限制图片的大小
   const isImageSize = file.size / 1024 < 50;
@@ -227,22 +253,18 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
   // 开启图片加载效果
   uploadLoading.value = true;
 };
-// 表单验证
-const formRef = ref<FormInstance>();
 // 验证规则
 const rules = reactive<FormRules>({
   // 针对品牌命成的验证规则
   tmName: [
-    {
-      required: true,
-      message: "必须输入品牌名称",
-    },
-    {
-      min: 2,
-      max: 10,
-      message: "品牌名必须在2-10个字之间",
-      trigger: "blur",
-    },
+    {required: true,message: "必须输入品牌名称",trigger: "blue",},
+    {validator: validtateTmName,trigger: "blue",},
+    // {
+    //   min: 2,
+    //   max: 10,
+    //   message: "品牌名必须在2-10个字之间",
+    //   trigger: "blur",
+    // },
   ],
   logoUrl: [
     {
@@ -252,15 +274,37 @@ const rules = reactive<FormRules>({
     },
   ],
 });
-
 // 表单验证 添加或者修改品牌操作
 const addOrUpdate = () => {
-  formRef.value?.validate((valid) => {
+  formRef.value?.validate(async (valid) => {
     // 表单验证不通过,啥也不做
     if (!valid) return;
     // 表单验证通过
+    try {
+      // 调用接口
+      await addOrUpdateTrademarkApi(trademark);
+      // 提示信息
+      ElMessage.success("操作成功");
+      // 刷新
+      getTrademarkList(trademark.id ? current.value : 1);
+      // 关闭对话框
+      dialogFormVisible.value = false;
+    } catch (error:any) {
+      // 提示失败
+      ElMessage.error("操作失败",error);
+    }
   });
 };
+
+// 删除操作
+const deleteOperation = (row: TrademarkModel) => {
+  ElMessageBox.confirm("Are you sure to close this dialog?")
+    .then(() => {})
+    .catch(() => {
+      // catch error
+    });
+};
+
 // 页码加载后的钩子
 onMounted(() => {
   getTrademarkList();
