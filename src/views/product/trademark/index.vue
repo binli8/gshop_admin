@@ -33,7 +33,8 @@
             type="danger"
             :icon="Delete"
             @click="deleteOperation(row)"
-          ></el-button>
+          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -136,7 +137,9 @@ import { onMounted, reactive, ref, nextTick } from "vue";
 import {
   getTrademarkListApi,
   addOrUpdateTrademarkApi,
+  deleteTrademarkByIdApi
 } from "@/api/product/trademark";
+import { get } from 'http';
 
 // 定义数组,用来收集品牌列表的数组数据信息
 const trademarkList = ref<TrademarkListModel>([]);
@@ -227,7 +230,7 @@ const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
 // 1.定义用来收集表单的form对象
 const formRef = ref<FormInstance>();
 // 2.验证品牌名称
-const validtateTmName = (rule: any, value: any, callback: any) => {
+const validateTmName = (rule: any, value: any, callback: any) => {
   if (value.length < 2 || value.length > 10) {
     callback("品牌名必须在2-10个字之间");
   } else {
@@ -257,12 +260,12 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
 const rules = reactive<FormRules>({
   // 针对品牌命成的验证规则
   tmName: [
-    {required: true,message: "必须输入品牌名称",trigger: "blue",},
-    {validator: validtateTmName,trigger: "blue",},
+    { required: true, message: "必须输入品牌名称", trigger: "blur" },
+    { validator: validateTmName, trigger: "blue" },
     // {
     //   min: 2,
     //   max: 10,
-    //   message: "品牌名必须在2-10个字之间",
+    //   message: "品牌的名称必须在2到10个字之间",
     //   trigger: "blur",
     // },
   ],
@@ -274,10 +277,11 @@ const rules = reactive<FormRules>({
     },
   ],
 });
+
 // 表单验证 添加或者修改品牌操作
 const addOrUpdate = () => {
   formRef.value?.validate(async (valid) => {
-    // 表单验证不通过,啥也不做
+    // 表单验证不通过,什么也不做
     if (!valid) return;
     // 表单验证通过
     try {
@@ -289,20 +293,33 @@ const addOrUpdate = () => {
       getTrademarkList(trademark.id ? current.value : 1);
       // 关闭对话框
       dialogFormVisible.value = false;
-    } catch (error:any) {
-      // 提示失败
-      ElMessage.error("操作失败",error);
+    } catch (error: any) {
+      ElMessage.error("操作失败", error);
     }
   });
-};
+} 
 
 // 删除操作
 const deleteOperation = (row: TrademarkModel) => {
-  ElMessageBox.confirm("Are you sure to close this dialog?")
-    .then(() => {})
-    .catch(() => {
-      // catch error
-    });
+  ElMessageBox.confirm(`您确认删除${row.tmName}吗?`,'提示',{
+    confirmButtonText:'确认',
+    confirmButtonClass:'取消',
+    type:'warning'
+  })
+    .then(async() => {
+      // 发送请求删除
+      await deleteTrademarkByIdApi(row.id as number)
+      // 提示信息
+      ElMessage.success('操作成功')
+      // 如果此时当前这一页是第一页,那么删除数据以后,直接刷新就行了,如果不是第一页,且数据只剩下一条了,如果
+      // 删除应该回到上一页,进行刷新操作
+      if (trademarkList.value.length === 1 && current.value > 1) {
+        current.value -= 1
+      }
+      // 刷新
+      getTrademarkList()
+    })
+    .catch(() => {});
 };
 
 // 页码加载后的钩子

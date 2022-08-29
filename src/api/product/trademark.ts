@@ -35,14 +35,14 @@ export const deleteTrademarkByIdApi = (id:number) => request.delete<any,null>(Ap
 // 新增一个品牌对象的接口函数
 export const addTrademarkApi = (trademark:TrademarkModel) => request.post<any,null>(Api.AddTrademark,trademark)
 // 修改一个品牌对象的接口函数
-export const updateTrademarkApi = (trademark:TrademarkModel) => request.post<any,null>(Api.UpdateTrademark,trademark)
+export const updateTrademarkApi = (trademark:TrademarkModel) => request.put<any,null>(Api.UpdateTrademark,trademark)
 // 根据页码和每页的条数获取品牌对象数组数据的接口函数
 export const getTrademarkListApi = (page:number,limit:number) => request.get<any,TrademarkPageListModel>(Api.GetTrademarkList+`${page}/${limit}`)
 
 // 新增或者修该品牌对象
 export const addOrUpdateTrademarkApi = (trademark:TrademarkModel) =>{
     if (trademark.id) {     //修改
-        return request.post<any,null>(Api.UpdateTrademark,trademark)
+        return request.put<any,null>(Api.UpdateTrademark,trademark)
     } else {                //新增
         return request.post<any,null>(Api.AddTrademark,trademark)
     }
