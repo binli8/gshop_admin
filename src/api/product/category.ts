@@ -15,9 +15,9 @@ enum Api{
 // 获取一级分类列表数据的接口函数
 export const getCategory1ListApi = () => request.get<any,CategoryListModel>(Api.GetCategory1List)
 // 获取二级分类列表数据的接口函数
-export const getCategory2ListApi = (category1Id:number) => request.get<any,CategoryListModel>(Api.GetCategory1List+`${category1Id}`)
+export const getCategory2ListApi = (category1Id:number) => request.get<any,CategoryListModel>(Api.GetCategory2List+`${category1Id}`)
 // 获取三级分类列表数据的接口函数
-export const getCategory3ListApi = (category2Id:number) => request.get<any,CategoryListModel>(Api.GetCategory1List+`${category2Id}`)
+export const getCategory3ListApi = (category2Id:number) => request.get<any,CategoryListModel>(Api.GetCategory3List+`${category2Id}`)
 
 
 // GET /admin/product/getCategory2/

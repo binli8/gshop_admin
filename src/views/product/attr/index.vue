@@ -1,5 +1,5 @@
 <template>
-    <div>平台属性管理</div>
+    <CategirySelector/>
 </template>
 <script lang="ts">
 export default {
@@ -7,6 +7,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import CategirySelector from '@/components/CategirySelector/index.vue'
 </script>
 <style scoped>
 </style>

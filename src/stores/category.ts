@@ -24,25 +24,25 @@ export const useCategoryStore = defineStore({
     // 计算属性
     getters: ({
         // 获取一级分类的id
-        category1Id(): NumberAble { return this.category1Id as number },
+        getCategory1Id(): NumberAble { return this.category1Id as number },
         // 获取二级分类的id
-        category2Id(): NumberAble { return this.category2Id as number },
+        getCategory2Id(): NumberAble { return this.category2Id as number },
         // 获取三级分类的id
-        category3Id(): NumberAble { return this.category3Id as number },
+        getCategory3Id(): NumberAble { return this.category3Id as number },
         // 获取一级分类的列表数据
-        getCategoryList1(): CategoryListModel { return this.category1List },
+        getCategory1List(): CategoryListModel { return this.category1List },
         // 获取二级分类的列表数据
-        getCategoryList2(): CategoryListModel { return this.category2List },
+        getCategory2List(): CategoryListModel { return this.category2List },
         // 获取三级分类的列表数据
-        getCategoryList3(): CategoryListModel { return this.category3List },
+        getCategory3List(): CategoryListModel { return this.category3List },
     }),
     actions: {
         // 调用接口发送请求,获取一级分类列表数据
-        async getCategoryList1() {
+        async getCategory1List1() {
             this.category1List = await getCategory1ListApi()
         },
         // 调用接口发送请求,获取二级分类列表数据 
-        async getCategoryList2(category1Id: number) {
+        async getCategory2List2(category1Id: number) {
             // 先存储一级分类的id
             this.category1Id = category1Id
             this.category2List = await getCategory2ListApi(category1Id)
@@ -52,7 +52,7 @@ export const useCategoryStore = defineStore({
             this.category3List = []
         },
         // 调用接口发送请求,获取三级分类列表数据 
-        async getCategoryList3(category2Id: number) {
+        async getCategory3List3(category2Id: number) {
             // 存储二级分类的id
             this.category2Id = category2Id
             this.category3List = await getCategory3ListApi(category2Id)
