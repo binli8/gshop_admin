@@ -17,7 +17,8 @@ export const useUserInfoStore = defineStore('userInfo', {
     token: getToken() as string,
     name: '',
     avatar: '',
-    menuRoutes: []
+    // 解决样式丢失
+    menuRoutes:staticRoutes
   }),
 
 	actions: {
