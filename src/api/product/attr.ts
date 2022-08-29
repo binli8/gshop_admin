@@ -20,9 +20,9 @@ export const getAttrInfoListApi = ({ category1Id, category2Id, category3Id }: Ca
 // 根据id删除指定指定的平台属性对象的接口函数
 export const deleteAttrApi = (attrId: number) => request.delete<any, null>(Api.DeleteAttr + `${attrId}`)
 // 根据id获取对应的平台属性值对象的数组的接口函数
-export const GetAttrValueList = (attrId: number) => request.get<any, AttrValueListModel>(Api.GetAttrValueList + `${attrId}`)
+export const getAttrValueListApi = (attrId: number) => request.get<any, AttrValueListModel>(Api.GetAttrValueList + `${attrId}`)
 // 添加或者修改平台属性对象的接口函数
-export const GetAttrInfoList = (arrt: AttrModel) => request.post<any, null>(Api.GetAttrInfoList, arrt)
+export const saveAttrInfoApi = (arrt: AttrModel) => request.post<any, null>(Api.GetAttrInfoList, arrt)
 
 
 // GET 
