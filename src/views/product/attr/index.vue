@@ -36,7 +36,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150">
-          <template #default="{ row, $index }">
+          <template #default="{row}">
             <el-button
               size="small"
               type="primary"
