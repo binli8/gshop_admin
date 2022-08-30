@@ -11,7 +11,7 @@ export type AttrValueListModel = AttrValueModel[]
 export interface AttrModel {
       id?:number                            //id 
       attrName: string,                     //名字
-      categoryI:number,                     //分类的id
+      categoryId:number,                     //分类的id
       categoryLevel:number,                 //分类的级别
       attrValueList: AttrValueListModel     //平台属性值对象数组
 }

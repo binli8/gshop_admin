@@ -22,7 +22,7 @@ export const deleteAttrApi = (attrId: number) => request.delete<any, null>(Api.D
 // 根据id获取对应的平台属性值对象的数组的接口函数
 export const getAttrValueListApi = (attrId: number) => request.get<any, AttrValueListModel>(Api.GetAttrValueList + `${attrId}`)
 // 添加或者修改平台属性对象的接口函数
-export const saveAttrInfoApi = (arrt: AttrModel) => request.post<any, null>(Api.GetAttrInfoList, arrt)
+export const saveAttrInfoApi = (arrt: AttrModel) => request.post<any, null>(Api.SaveAttrInfo, arrt)
 
 
 // GET 

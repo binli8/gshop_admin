@@ -1,6 +1,6 @@
 <template>
   <el-card shadow="always" style="margin-bottom: 10px">
-    <CategirySelector :isDisabled="!isShowEditAttr"/>
+    <CategirySelector :isDisabled="!isShowEditAttr" />
   </el-card>
 
   <el-card shadow="always">
@@ -40,17 +40,18 @@
               :icon="Edit"
               @click="showUpdateAttr(row)"
             ></el-button>
-            <el-popconfirm :title="`您确认要删除${row.attrName}`" @click="deleteAttr(row)">
+            <el-popconfirm
+              :title="`您确认要删除${row.attrName}`"
+              @confirm="deleteAttr(row)"
+            >
               <template #reference>
-                <el-button size="small" type="danger" icon="Delete"></el-button>
+                <el-button
+                  size="small"
+                  type="danger"
+                  :icon="Delete"
+                ></el-button>
               </template>
             </el-popconfirm>
-            <el-button
-              size="small"
-              type="danger"
-              :icon="Delete"
-              @click="deleteAttributes"
-            ></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,7 +69,13 @@
       </el-form>
       <!--两个按钮-->
       <div style="margin-bottom: 20px">
-        <el-button type="primary" :icon="Plus" @click="addAttValue" :disabled="!attr.attrName">添加属性值</el-button>
+        <el-button
+          type="primary"
+          :icon="Plus"
+          @click="addAttValue"
+          :disabled="!attr.attrName"
+          >添加属性值</el-button
+        >
         <el-button @click="isShowEditAttr = true">取消</el-button>
       </div>
       <!--表格-->
@@ -100,14 +107,30 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
-          <template #default="{ row }">
-            <el-button size="small" type="danger" :icon="Delete" ></el-button>
+          <template #default="{ row, $index }">
+            <el-popconfirm
+              :title="`您确认删除${row.valueName}吗?`"
+              @confirm="attr.attrValueList.splice($index, 1)"
+            >
+              <template>
+                <el-button
+                  size="small"
+                  type="danger"
+                  :icon="Delete"
+                ></el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
       <!--两个按钮-->
       <div>
-        <el-button type="primary" :disabled="!attr.attrName || attr.attrValueList.length">保存</el-button>
+        <el-button
+          type="primary"
+          @click="save"
+          :disabled="!attr.attrName || !attr.attrValueList.length"
+          >保存</el-button
+        >
         <el-button @click="isShowEditAttr = true">取消</el-button>
       </div>
     </div>
@@ -123,7 +146,7 @@ export default {
 import CategirySelector from "@/components/CategirySelector/index.vue";
 // 引入icon图标
 import { Plus, Edit, Delete } from "@element-plus/icons-vue";
-import { reactive, ref, watch, nextTick } from "vue";
+import { reactive, ref, watch, nextTick, onBeforeUnmount } from "vue";
 // 引入平台属性值对象数组接口类型
 import type {
   AttrListModel,
@@ -133,7 +156,11 @@ import type {
 // 引入pinia仓库
 import { useCategoryStore } from "@/stores/category";
 // 引入三级分类的id获取对应的平台属性对象数组的接口函数
-import { getAttrInfoListApi, deleteAttrApi } from "@/api/product/attr";
+import {
+  getAttrInfoListApi,
+  deleteAttrApi,
+  saveAttrInfoApi,
+} from "@/api/product/attr";
 // 引入深拷贝的方法
 import cloneDeep from "lodash/cloneDeep";
 import { ElMessage } from "element-plus";
@@ -151,7 +178,7 @@ const inputRefs = ref<HTMLInputElement[]>([]);
 const attr = reactive<AttrModel>({
   id: undefined, //id
   attrName: "", //名字
-  categoryI: -1, //分类的id
+  categoryId: -1, //分类的id
   categoryLevel: 0, //分类的级别
   attrValueList: [], //平台属性值对象数组
 });
@@ -226,10 +253,43 @@ const addAttValue = () => {
     // 表格中绑定的数组数据的长度
     inputRefs.value[attr.attrValueList.length - 1].focus();
   });
+ 
+};
+
+// 添加或修改平台属性值
+const save = async () => {
+  // 更新三级分类的id
+  attr.categoryId = categoryStore.getCategory3Id as number;
+  // 判断平台属性值数组是否有数据,如果没有数据提示
+  if (attr.attrValueList.length === 0) {
+    ElMessage.warning("请输入数据");
+    return;
+  }
+  // 过滤没有值的数据已经删掉isShowEdit属性
+  attr.attrValueList = attr.attrValueList.filter((item) => {
+    // 过滤掉没有的数据
+    if (!item.valueName) return false;
+    // 此时有数据
+    delete item.isShowEdit;
+    return true;
+  });
+  try {
+    // 调用接口
+    await saveAttrInfoApi(attr);
+    // 提示成功
+    ElMessage.success("操作成功");
+    // 关闭当前页面
+    isShowEditAttr.value = true;
+    // 刷新页面
+      getAttrList();
+  } catch (error) {
+    // 提示失败信息
+    ElMessage.error((error as any) || "操作失败");
+  }
 };
 
 // 删除平台属性
-const deleteAttributes = async (row: AttrModel) => {
+const deleteAttr = async (row: AttrModel) => {
   try {
     await deleteAttrApi(row.id as number);
     ElMessage.success("操作成功");
@@ -238,6 +298,18 @@ const deleteAttributes = async (row: AttrModel) => {
     ElMessage.error(error as any | "操作失败");
   }
 };
+
+// 组件卸载前,清空数据
+onBeforeUnmount(() => {
+  categoryStore.$state = {
+    category1Id: undefined, //一级分类的id
+    category2Id: undefined, //二级分类的id
+    category3Id: undefined, //三级分类的id
+    category1List: [], //一级分类的列表数据
+    category2List: [], //一级分类的列表数据
+    category3List: [], //一级分类的列表数据
+  };
+});
 </script>
 <style scoped>
 </style>
