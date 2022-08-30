@@ -38,11 +38,11 @@ export const useCategoryStore = defineStore({
     }),
     actions: {
         // 调用接口发送请求,获取一级分类列表数据
-        async getCategory1List1() {
+        async getCategoryList1() {
             this.category1List = await getCategory1ListApi()
         },
         // 调用接口发送请求,获取二级分类列表数据 
-        async getCategory2List2(category1Id: number) {
+        async getCategoryList2(category1Id: number) {
             // 先存储一级分类的id
             this.category1Id = category1Id
             this.category2List = await getCategory2ListApi(category1Id)
@@ -52,7 +52,7 @@ export const useCategoryStore = defineStore({
             this.category3List = []
         },
         // 调用接口发送请求,获取三级分类列表数据 
-        async getCategory3List3(category2Id: number) {
+        async getCategoryList3(category2Id: number) {
             // 存储二级分类的id
             this.category2Id = category2Id
             this.category3List = await getCategory3ListApi(category2Id)

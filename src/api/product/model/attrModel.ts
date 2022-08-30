@@ -16,7 +16,4 @@ export interface AttrModel {
       attrValueList: AttrValueListModel     //平台属性值对象数组
 }
 // 定义平台属性值对象数组接口类型
-const level3ClassificationID = ({
-    
-})
 export type AttrListModel = AttrModel[]

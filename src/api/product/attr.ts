@@ -7,7 +7,7 @@ import type { CategoryIdModel } from './model/categoryModel'
 // 定义枚举接口地址
 enum Api {
     // 根据三级分类获取平台属性数据的地址
-    GetAttrInfoList = '/admin/product/attrInfoList/{category1Id}/',
+    GetAttrInfoList = '/admin/product/attrInfoList/',
     // 根据删除id平台属性的接口地址
     DeleteAttr = '/admin/product/deleteAttr/',
     // 根据id获取平台属性值对象数组的接口地址
