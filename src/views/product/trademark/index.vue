@@ -206,6 +206,7 @@ const showAdd = () => {
 
 // 点击修改按键,显示对话框
 const showUPdate = (row: TrademarkModel) => {
+  formRef.value?.clearValidate();
   // 把当前点击的这一行品牌对象的数据拷贝一份,保存到trademark对象中
   Object.assign(trademark, row);
   dialogFormVisible.value = true;
