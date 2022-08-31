@@ -66,7 +66,7 @@ export interface SpupageListParamsModel {
 }
 // 定义spu分页接口函数所需要的参数的接口类型
 export interface SpuPageParamsCategoryIdModel{
-    pages:number         //当前页
+    page:number         //当前页
     limit:number        //每页记录几条数据
     category3Id:number  //三级分类的id
 }
