@@ -1,5 +1,3 @@
-import { type } from "os"
-
 // sku的平台属性对象接口类型
 export interface SkuAttrValueModel {
     id?: number          //id
