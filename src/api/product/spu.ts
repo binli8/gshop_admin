@@ -40,7 +40,7 @@ export const addSpuInfoApi = (spuInfo: SpuModel) => request.post<any, null>(Api.
 // 修改spu的接口函数
 export const updateSpuInfoApi = (spuInfo: SpuModel) => request.post<any, null>(Api.UpdateSpuInfo, spuInfo)
 // 根据页码和每页的条数以及三级分类id获取spu对象数组数据的接口函数
-export const getSpuInfoListApi = ({ page, limit, category3Id }: SpuPageParamsCategoryIdModel) => request.get<any, SpuSaleAttrListModel>(Api.GetSpuInfoList + `/${page}/${limit}`, { params: { category3Id } })
+export const getSpuInfoListApi = ({ page, limit, category3Id }: SpuPageParamsCategoryIdModel) => request.get<any,SpupageListParamsModel>(Api.GetSpuInfoList + `/${page}/${limit}`, { params: { category3Id } })
 // 根据spu的id获取对应的图片列表数据的接口函数
 export const getSpuImageListBySpuIdApi = (spuId: number) => request.get<any, SpuImageListModel>(Api.GetSpuImageListBySpuId + `/${spuId}`)
 // 根据spu的id获取对应的销售属性列表数据的接口函数

@@ -2,7 +2,7 @@
 export interface SpuSaleAttrValueModel {
     id?: number,                       //id
     spuId?: number                    //spu的id
-    saleAttrName?: string       //销售属性对象的名字
+    saleAttrName?: string           //销售属性对象的名字
     isChecked?: boolean              //是否需要
     baseSaleAttrId: number           //销售属性对象的id 
     saleAttrValueName: string       //销售属性值的名字
