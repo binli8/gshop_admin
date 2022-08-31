@@ -109,10 +109,7 @@ import { Plus, Edit, Delete, Loading } from "@element-plus/icons-vue";
 import type { UploadProps, FormInstance, FormRules } from "element-plus";
 import { ElMessage, ElMessageBox } from "element-plus";
 // 引入品牌相关的数据的接口类型
-import {
-  TrademarkModel,
-  TrademarkListModel,
-} from "@/api/product/model/trademarkModel";
+import type{TrademarkModel,TrademarkListModel,} from "@/api/product/model/trademarkModel";
 // 引入ref
 import { ref, onMounted, reactive, nextTick } from "vue";
 // 引入品牌相关的接口函数
