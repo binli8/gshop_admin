@@ -1,5 +1,7 @@
 <template>
-    <div>平台属性管理</div>
+    <el-card>
+        <CategorySelector/>
+    </el-card>
 </template>
 <script lang="ts">
 export default {
@@ -7,6 +9,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import CategorySelector from '@/components/CategorySelector/index.vue'
 </script>
 <style scoped>
 </style>
