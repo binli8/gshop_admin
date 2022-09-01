@@ -36,7 +36,7 @@ export const findSpuInfoByKeywordApi = (keyword:string) => request.get<any,SpuLi
 // 根据id获取spu对象数据的接口函数
 export const getIdObtainSpuApi = (spuId:number) => request.get<any,SpuModel>(Api.GetIdObtainSpu+`/${spuId}`)
 // 根据id的数组获取对应的spi对象数组数据的接口函数
-export const findSpuInfoBySpuIdListApi = (ids:number[]) => request.post<any,SpuModel>(Api.FindSpuInfoBySpuIdList,ids)
+export const findSpuInfoBySpuIdListApi = (ids:number[]) => request.post<any,SpuListModel>(Api.FindSpuInfoBySpuIdList,ids)
  // 添加spu的接口函数
 export const  addSpuInfoApi = (spuInfo:SpuModel) => request.post<any,null>(Api.AddSpuInfo,spuInfo)
  // 修改spu的接口函数
