@@ -41,7 +41,7 @@ export type SpuImageListModel = SpuImageModel[]
 
 // spu的对象的接口类型
 export interface SpuModel{
-    id?:number          //id
+    id?:number              //id
     category3Id?:number     //三级分类的id
     tmId?:number           //品牌的id
     spuName:string          //spu的名字

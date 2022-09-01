@@ -72,16 +72,16 @@ import type { RouteRecordRaw } from 'vue-router';
         meta:{title:'平台属性管理'}
       },
       {
-        path:'sku/list',
-        name:'Sku',
-        component:()=>import('@/views/product/sku/index.vue'),
-        meta:{title:'SKU管理'}
-      },
-      {
         path:'spu/list',
         name:'Spu',
         component:()=>import('@/views/product/spu/index.vue'),
         meta:{title:'SPU管理'}
+      },
+      {
+        path:'sku/list',
+        name:'Sku',
+        component:()=>import('@/views/product/sku/index.vue'),
+        meta:{title:'SKU管理'}
       },
     ]
   },
