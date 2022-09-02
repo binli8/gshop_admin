@@ -26,6 +26,8 @@ enum Api {
     // 根据spu的id获取对应的销售属性列表数据的接口地址
     GetSpuSaleAttrList = '/admin/product/spuSaleAttrList'
 }
+
+
 // 定义接口函数
 // 获取基础的销售属性数组数据的接口函数
 export const getBaseSaleAttrListApi = () => request.get<any,BaseSaleAttrListModel>(Api.GetBaseSaleAttrList)

@@ -34,13 +34,12 @@
     <!-- SPU图片 -->
     <el-form-item label="SPU图片">
       <el-upload
-        v-model:file-list="spuInfo.SpuImageList"
-        multiple
+        v-model:file-list="spuInfo.spuImageList"
         :action="`${BASE_URL}/admin/product/fileUpload`"
+        list-type="picture-card"
         :on-preview="handlePictureCardPreview"
         :on-remove="handleRemove"
         :on-success="handleSuccess"
-        list-type="picture-card"
       >
         <el-icon><Plus /></el-icon>
       </el-upload>
@@ -51,7 +50,7 @@
 
     <!-- 销售属性 -->
     <el-form-item label="销售属性">
-      <el-select placeholder="请选择销售属性" v-model="saleAttrIdName">
+      <el-select type="text" placeholder="请选择销售属性" v-model="baseSaleIdOrName">
         <el-option
           v-for="(attr, index) in baseSaleAttrList"
           :key="index"
@@ -145,12 +144,11 @@ import type {
 } from "element-plus";
 // 引入枚举类型标识
 import { ShowOrHide } from "../types";
-// 引入spu接口类型
-import type { SpuModel } from "@/api/product/model/spuModel";
 // 引入品牌对象数组的类型
 import type { TrademarkListModel } from "@/api/product/model/trademarkModel";
 // 引入基础销售属性数组的类型和spu图片数组接口函数和spu销售属性数组接口函数
 import type {
+   SpuModel ,
   BaseSaleAttrListModel,
   SpuImageListModel,
   SpuSaleAttrValueListModel,
@@ -164,7 +162,7 @@ import {
   getSpuImageListApi,
   getSpuSaleAttrListApi,
 } from "@/api/product/spu";
-import { log } from 'console';
+
 
 // 定义图片预览效果
 const dialogImageUrl = ref("");
@@ -172,7 +170,7 @@ const dialogVisible = ref(false);
 // 接收父组件传递过来的自定义事件
 const emits = defineEmits(["setCurrentShowStatus"]);
 // 接收父级组件传递过来的spu对象数据
-const props = defineProps<{ currentSpuInfo: SpuModel }>();
+const props = defineProps<{currentSpuInfo:SpuModel }>();
 // 定义spuInfo对象
 const spuInfo = reactive<SpuModel>(props.currentSpuInfo);
 // 对话框图片的根路径地址
@@ -186,6 +184,8 @@ const baseSaleAttrList = ref<BaseSaleAttrListModel>([]);
 const saleAttrValueName = ref<string>();
 // 定义用来编辑模式的时候产生的文本框对象
 const inputRefs = ref<HTMLInputElement[]>([]);
+// 定义销售属性
+const baseSaleIdOrName = ref<string>()
 
 // 获取所有的品牌数据
 onMounted(async () => {
@@ -194,30 +194,30 @@ onMounted(async () => {
 // 获取所有的基础销售数据数据
 onMounted(async () => {
   baseSaleAttrList.value = await getBaseSaleAttrListApi();
+  
 });
 // 获取spu对象下所有的销售属性数据
 onMounted(async () => {
   // 获取spu对象下的id数据,并且判断数据是否有意义
   const id = spuInfo.id as number;
-  if (!id) {
+  if (!id) return
     spuInfo.spuSaleAttrList = await getSpuSaleAttrListApi(id);
-  }
+    console.log(spuInfo.spuSaleAttrList);
+
 });
 // 获取spu对象下所有的图片数据
 onMounted(async () => {
   // 获取spu对象下的id数据,并且判断数据是否有意义
   const id = spuInfo.id as number;
-  if (!id) {
-    const spuImageList = await getSpuImageListApi(id);
-    console.log('@@@@',spuImageList);
-    
+  if (!id) return
+    const spuImageList = await getSpuImageListApi(id); 
     // 需要把图片对象的数据进行添加(name,url)
-    spuInfo.spuImgeList = spuImageList.map((item) => ({
+    spuInfo.spuImageList = spuImageList.map((item) => ({
       ...item,
       name: item.imgUrl,
       url: item.imgUrl,
     }));
-  }
+  
 });
 // 上传图片的回调
 const fileList = ref<UploadUserFile[]>([
@@ -231,7 +231,7 @@ const handleRemove: UploadProps["onRemove"] = (
   uploadFile: UploadFile,
   uploadFiles: UploadFiles
 ) => {
-  spuInfo.spuImgeList = uploadFiles as any;
+  spuInfo.spuImageList = uploadFiles as any;
 };
 // 预览照片的回调
 const handlePictureCardPreview = (file: UploadFile) => {
@@ -247,7 +247,7 @@ const handleSuccess: UploadProps["onSuccess"] = (
   uploadFiles: UploadFiles
 ) => {
   //   当图片上传成功,要把新上传的图片保存
-  spuInfo.spuImgeList = uploadFiles as any;
+  spuInfo.spuImageList = uploadFiles as any;
   // 清理掉图片的验证信息
 };
 // 编辑模式,文本框出现,自动的获取焦点

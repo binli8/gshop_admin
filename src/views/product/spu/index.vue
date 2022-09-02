@@ -52,7 +52,7 @@ const initSpuInfo = () =>({
     spuName:'',          //spu的名字
     description:'',      //spu 的描述
     spuSaleAttrList:[],       //spu销售属性对象数组
-    spuImgeList:[]           //spu的图片对象数组
+    spuImageList:[]           //spu的图片对象数组
 })
 // 定义一个对象用来存储spuInfo对象的初始数据
 const currentSpuInfo = ref<SpuModel>(initSpuInfo())

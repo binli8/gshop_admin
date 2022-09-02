@@ -47,8 +47,8 @@ export interface SpuModel{
     tmId?:number           //品牌的id
     spuName:string          //spu的名字
     description:string      //spu 的描述
-    spuSaleAttrList:SpuSaleAttrListModel       //spu销售属性对象数组
-    spuImgeList:SpuImageListModel           //spu的图片对象数组
+    spuSaleAttrList:SpuSaleAttrListModel      //spu销售属性对象数组
+    spuImageList:SpuImageListModel           //spu的图片对象数组
 }
 // spu的对象的数组的接口类型
 export type SpuListModel = SpuModel[]
