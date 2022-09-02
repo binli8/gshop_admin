@@ -51,7 +51,13 @@
       v-model="dialogVisible"
       :title="trademark.id ? '修改品牌' : '添加品牌'"
     >
-      <el-form ref="formRef" :rules="rules" :model="trademark" style="width: 80%" label-width="100px">
+      <el-form
+        ref="formRef"
+        :rules="rules"
+        :model="trademark"
+        style="width: 80%"
+        label-width="100px"
+      >
         <!-- 品牌名称 -->
         <el-form-item label="品牌名称" prop="tmName">
           <el-input v-model="trademark.tmName" autocomplete="off" />
@@ -102,14 +108,14 @@ export default {
 <script lang="ts" setup>
 // 引入icon图标
 import { Plus, Edit, Delete, Loading } from "@element-plus/icons-vue";
-import type { UploadProps,FormInstance,FormRules } from "element-plus";
+import type { UploadProps, FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
 // 引入品牌相关的数据的接口类型
 import type {
   TrademarkModel,
   TrademarkListModel,
-  TrademarkPageListModel,
 } from "@/api/product/model/TrademarkModel";
+
 // 引入ref
 import { onMounted, reactive, ref } from "vue";
 // 引入品牌相关的数据的接口类型
@@ -160,40 +166,38 @@ const showUpdate = (row: TrademarkModel) => {
   dialogVisible.value = true;
 };
 // 图片的加载效果的标识
-const uploadloading = ref<boolean>(false)
+const uploadloading = ref<boolean>(false);
 // 图片的跟根路径地址
-const BASE_URL = import.meta.env.VITE_API_URL
+const BASE_URL = import.meta.env.VITE_API_URL;
 // 存储图片
-const handleAvatarSuccess : UploadProps['onSuccess'] = (res) =>{
+const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
   // 存储上传成功的图片地址
-  trademark.logoUrl = res.data
+  trademark.logoUrl = res.data;
   // 关闭加载的效果
-  uploadloading.value = false
-}
-const beforeAvatarUpload:UploadProps['beforeUpload'] = (file) =>{
-// 限制两种图片的类型
-const isJpegOrPng = ['image/jpeg','image/png'].includes(file.type)
-// 限制图片的大小
-const isSize50k = file.size / 1024< 50
-// 判断图片的类型
-if (!isJpegOrPng) {
-  ElMessage.error('必须上传jpeg或者png格式的照片')
-  return false
-}
-if (!isSize50k) {
-  ElMessage.error('上传的图片必须小于50kb')
-  return false
-}
-// 开启图片加载效果
-uploadloading.value = false
-return true
-}
+  uploadloading.value = false;
+};
+const beforeAvatarUpload: UploadProps["beforeUpload"] = (file) => {
+  // 限制两种图片的类型
+  const isJpegOrPng = ["image/jpeg", "image/png"].includes(file.type);
+  // 限制图片的大小
+  const isSize50k = file.size / 1024 < 50;
+  // 判断图片的类型
+  if (!isJpegOrPng) {
+    ElMessage.error("必须上传jpeg或者png格式的照片");
+    return false;
+  }
+  if (!isSize50k) {
+    ElMessage.error("上传的图片必须小于50kb");
+    return false;
+  }
+  // 开启图片加载效果
+  uploadloading.value = false;
+  return true;
+};
 // 定义用来收集表单form对象的
-const formRef = ref<FormInstance>()
+const formRef = ref<FormInstance>();
 //  验证规则
-const rules = reactive<FormRules>({
-  
-})
+const rules = reactive<FormRules>({});
 // 页面加载后的钩子
 onMounted(() => {
   getTrademarkList();
