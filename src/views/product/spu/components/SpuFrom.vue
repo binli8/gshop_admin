@@ -84,7 +84,7 @@
               @close="row.spuSaleAttrValueList.splice(index, 1)"
               style="margin-right: 5px"
             >
-              {{ attr.saleAttrValueName}}
+              {{ attr.saleAttrValueName }}
             </el-tag>
             <!-- 收集内容 -->
             <el-input
@@ -108,7 +108,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150">
-          <template v-slot="{ row, $index }">
+          <template v-slot="{$index }">
             <el-button
               size="small"
               type="danger"
@@ -142,6 +142,13 @@ import { onMounted, reactive, ref, nextTick } from "vue";
 import { ShowStatus } from "../types";
 // 引入icon
 import { Plus, Delete } from "@element-plus/icons-vue";
+import {
+  UploadProps,
+  UploadUserFile,
+  UploadFile,
+  UploadFiles,
+  ElMessage,
+} from "element-plus";
 // 引入品牌对象数组的类型
 import type { TrademarkListModel } from "@/api/product/model/trademarkModel";
 // 引入基础销售属性数组的类型和spu图片数组类型和spu销售属性数组类型
@@ -160,15 +167,6 @@ import {
   getSpuImageListBySpuIdApi,
   getSpuSaleAttrListBySpuIdApi,
 } from "@/api/product/spu";
-// 图片的根路径地址
-const BASE_URL = import.meta.env.VITE_API_URL;
-import {
-  UploadProps,
-  UploadUserFile,
-  UploadFile,
-  UploadFiles,
-  ElMessage,
-} from "element-plus";
 
 // 接收父组件传递过来的自定义事件
 const emit = defineEmits(["setCurrentShowStatus"]);
@@ -176,7 +174,8 @@ const emit = defineEmits(["setCurrentShowStatus"]);
 const Props = defineProps<{ currentSpu: SpuModel }>();
 // 定义spuInfo对象
 const spuInfo = reactive<SpuModel>(Props.currentSpu);
-
+// 图片的根路径地址
+const BASE_URL = import.meta.env.VITE_API_URL;
 // 定义品牌对象数组
 const trademarkList = ref<TrademarkListModel>([]);
 // 定义用来接收所有的基础销售对象的数组
@@ -187,6 +186,10 @@ const baseSaleIdOrName = ref<string>();
 const saleAttrValueName = ref<string>();
 // 用来收集编辑模式的时间产生的文本框对象
 const inputRefs = ref<HTMLInputElement[]>([]);
+// 定义图片的类型
+const dialogImageUrl = ref("");
+// 定义预览是否开启
+const dialogVisible = ref(false);
 // 获取所有的品牌数据,onMounted回调可以使用n次
 onMounted(async () => {
   trademarkList.value = await getTrademarkListAllApi();
@@ -217,14 +220,14 @@ onMounted(async () => {
   }));
 });
 
+
 const fileList = ref<UploadUserFile[]>([
   {
     name: "food.jpeg",
     url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
   },
 ]);
-const dialogImageUrl = ref("");
-const dialogVisible = ref(false);
+
 // 移除图片的事件回调
 const handleRemove: UploadProps["onRemove"] = (
   uploadFile: UploadFile,
@@ -257,9 +260,9 @@ const toEdit = (row: SpuSaleAttrModel, index: number) => {
 const toView = (row: SpuSaleAttrModel) => {
   // 判断文本框收集的数据是否存在
   if (!saleAttrValueName.value || !saleAttrValueName.value.trim()) {
-    ElMessage.warning("请输入有效数据")
-    saleAttrValueName.value = ''
-    row.isShowEdit = false
+    ElMessage.warning("请输入有效数据");
+    saleAttrValueName.value = "";
+    row.isShowEdit = false;
     return;
   }
   // 判断输入的数据和之前属性值数组中数据是否一样
@@ -276,10 +279,9 @@ const toView = (row: SpuSaleAttrModel) => {
       saleAttrValueName: saleAttrValueName.value,
     });
     console.log(saleAttrValueName.value);
-    
   }
   // 清空文本框中的数据
-  saleAttrValueName.value = '';
+  saleAttrValueName.value = "";
   row.isShowEdit = false;
 };
 </script>
