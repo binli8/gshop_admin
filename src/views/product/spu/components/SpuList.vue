@@ -12,7 +12,9 @@
     border
   >
     <el-table-column type="index" label="序号" width="80" align="center">
-      <template v-slot={$index}>{{pageSize*(current-1)+$index+1}}</template>
+      <template v-slot="{ $index }">{{
+        pageSize * (current - 1) + $index + 1
+      }}</template>
     </el-table-column>
     <el-table-column prop="spuName" label="SPU名称" />
     <el-table-column prop="description" label="SPU描述" />
@@ -67,7 +69,7 @@
       <el-table-column property="price" label="价格(元)" />
       <el-table-column property="weight" label="重量(千克)" />
       <el-table-column property="address" label="默认图片">
-        <template v-slot="{row }">
+        <template v-slot="{ row }">
           <img :src="row.skuDefaultImg" style="width: 100px; height: 100px" />
         </template>
       </el-table-column>
@@ -97,7 +99,8 @@ import { findBySpuIdApi } from "@/api/product/sku";
 // 引入显示或隐藏页面的枚举类型
 import { ShowOrHide } from "../types";
 // 接收父组件传递过来的自定义事件
-const emits = defineEmits(["setCurrentShowStatus"]);
+const emits = defineEmits(["setCurrentShowStatus", "setCurrentSpuInfo"]);
+
 // 创建分类的仓库
 const categoryStore = useCategoryStore();
 //定页码
@@ -179,6 +182,12 @@ const showAddSku = (row: SpuModel) => {
 // 点击显示SpiList组件
 const showUpAddSpu = (row: SpuModel) => {
   emits("setCurrentShowStatus", ShowOrHide.SPU_ADD);
+  // 分发父组件传递过来的自定义事件
+  emits("setCurrentSpuInfo", {
+    ...row,
+    spuImageList: [],
+    spuSaleAttrlist: [],
+  });
 };
 </script>
 <style scoped>

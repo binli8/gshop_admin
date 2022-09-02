@@ -17,6 +17,7 @@ export interface SpuSaleAttrModel{
     spuSaleAttrValueList:SpuSaleAttrValueListModel      //销售属性值对象数组
     saleAttrName:string     //销售属性名字
     baseSaleAttrId:number   //所属的id
+    isShowEdit?:boolean
 }
 // spu的销售属性对象数组的接口类型
 export type SpuSaleAttrListModel =SpuSaleAttrModel[]
