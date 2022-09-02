@@ -165,7 +165,7 @@ const clickSkuButton = async (row:SpuModel)=>{
 }
 
 // 接收父组件传递过来的自定义事件
-const emit = defineEmits(['setCurrentShowStatus'])
+const emit = defineEmits(['setCurrentShowStatus','setCurrentSpuInfo'])
 
 // 点击按钮添加spu的回调函数
 const showaddSpu=()=>{
@@ -176,12 +176,23 @@ const showaddSpu=()=>{
 const showaddSku= (row:SpuModel)=>{
     // 显示SpuForm组件
     emit('setCurrentShowStatus',ShowStatus.SPU_ADD)
+  
+    
 }
 // 点击按钮添加spuList的回调
 const showaddUpdateSpu =(row:SpuModel)=>{
     // 显示SpuForm组件
     emit('setCurrentShowStatus',ShowStatus.SPU_ADD)
+      // 分发父级组件传递过来的自定义事件
+      emit('setCurrentSpuInfo',{
+        ...row,
+        spuSaleAttrList:[],
+        spuImageList: []
+      })
+      console.log(row);
+      
 }
+
 </script>
 <style scoped>
 </style>

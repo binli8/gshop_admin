@@ -183,7 +183,7 @@ const showUpdate = (row: TrademarkModel) => {
 const uploadloading = ref<boolean>(false);
 // 图片的根路径地址
 const BASE_URL = import.meta.env.VITE_API_URL;
-//
+//上传那图片的回调
 const handleAvatarSuccess: UploadProps["onSuccess"] = (res) => {
   console.log(res);
   // 存储上传成功的图片的地址
