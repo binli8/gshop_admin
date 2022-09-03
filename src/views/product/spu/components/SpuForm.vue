@@ -85,7 +85,7 @@
               :key="index"
               closable
               :disable-transitions="false"
-              @click="row.spuSaleAttrValueList.splice(index, 1)"
+              @close="row.spuSaleAttrValueList.splice(index,1)"
               type="success"
               style="margin-right: 5px"
             >
@@ -253,6 +253,8 @@ const toView = (row: SpuSaleAttrModel) => {
     row.isShowEdit = false;
     return;
   }
+  console.log(saleAttrValueName.value);
+  
   const isRepeat = row.spuSaleAttrValueList.some(
     (item) => item.saleAttrValueName === saleAttrValueName.value
   );
