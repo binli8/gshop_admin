@@ -90,29 +90,45 @@
 
     <!-- 图片列表 -->
     <el-form-item label="图片列表">
-      <el-table row-key="id" :data="spuImageList" stripe style="width: 100%" border>
+      <el-table
+        row-key="id"
+        :data="spuImageList"
+        stripe
+        style="width: 100%"
+        border
+      >
         <el-table-column type="selection" width="55" />
         <el-table-column label="图片">
-          <template v-slot="{row}">
-            <el-image :src="row.imgUrl" style="width: 100px; height: 100px"></el-image>
+          <template v-slot="{ row }">
+            <el-image
+              :src="row.imgUrl"
+              style="width: 100px; height: 100px"
+            ></el-image>
           </template>
         </el-table-column>
-        <el-table-column prop="imgName" label="名称"> 
-        </el-table-column>
+        <el-table-column prop="imgName" label="名称"> </el-table-column>
         <el-table-column label="操作">
           <template v-slot="row">
-            <el-tag type="success" v-if="row.isDefault===1">默认</el-tag>
-           <el-button size="small" v-else type="primary" @click="setDefault(row)">设置为默认</el-button>
+            <el-tag type="success" v-if="row.isDefault === 1">默认</el-tag>
+            <el-button
+              size="small"
+              v-else
+              type="primary"
+              @click="setDefault(row)"
+              >设置为默认</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
     </el-form-item>
 
     <!-- 两个按钮 -->
-    <el-button>保存</el-button>
-    <el-button @click="$emit('setCurrentShowStatus', ShowOrHide.SPU_LIST)"
-      >返回</el-button
-    >
+    <el-form-item>
+      <el-button>保存</el-button>
+      <el-button @click="$emit('setCurrentShowStatus', ShowOrHide.SPU_LIST)"
+        >返回</el-button
+      >
+    </el-form-item>
   </el-form>
 </template>
 <script lang="ts">
@@ -189,31 +205,31 @@ onMounted(async () => {
 onMounted(async () => {
   spuImageList.value = await getSpuImageListApi(props.spu.id);
   // 所有的图片都是非默认效果
-  spuImageList.value.forEach((item)=>{
-    item.isDefault = 0 
-  })
+  spuImageList.value.forEach((item) => {
+    item.isDefault = 0;
+  });
 });
 
-import { ElTable } from 'element-plus'
-const tableRef = ref<InstanceType<typeof ElTable>>()
+import { ElTable } from "element-plus";
+const tableRef = ref<InstanceType<typeof ElTable>>();
 
 // 设置某个图片为默认
 const setDefault = (row: SpuImageModel) => {
-    // 遍历数组,设置每个图片为非默认值状态
-    spuImageList.value.forEach((item)=>{
-      item.isDefault = 0  
-      tableRef.value?.toggleRowSelection(item,false)
-    })
-    // 当前这个图片是默认的
-    row.isDefault = 1
-    tableRef.value?.toggleRowSelection(row,true)
-  } 
+  // 遍历数组,设置每个图片为非默认值状态
+  spuImageList.value.forEach((item) => {
+    item.isDefault = 0;
+    tableRef.value?.toggleRowSelection(item, false);
+  });
+  // 当前这个图片是默认的
+  row.isDefault = 1;
+  tableRef.value?.toggleRowSelection(row, true);
+};
 
 // 图片选中就执行的回调函数
 const handleSelectionChange = (val: SpuImageListModel) => {
-//  存储选择的图片数组
-skuInfo.skuImageList = val as any
-}
+  //  存储选择的图片数组
+  skuInfo.skuImageList = val as any;
+};
 </script>
 <style scoped>
 </style>
