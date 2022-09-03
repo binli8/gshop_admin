@@ -89,7 +89,7 @@
               type="success"
               style="margin-right: 5px"
             >
-              {{ attr.saleAttrName }}
+              {{ attr.saleAttrValueName }}
             </el-tag>
             <!-- 收集内容 -->
             <el-input
