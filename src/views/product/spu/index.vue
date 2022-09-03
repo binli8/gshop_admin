@@ -17,6 +17,7 @@
     <SkuForm
       v-else-if="showStatus === ShowStatus.SKU_ADD"
       @setCurrentShowStatus="setCurrentShowStatus"
+      :spu="{id:currentSpuInfo.id,spuName:currentSpuInfo.spuName}"
     />
   </el-card>
 </template>

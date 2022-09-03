@@ -1,5 +1,5 @@
 <template>
-  <el-form label-width="120px" :model="spuInfo" :rules="rules">
+  <el-form label-width="120px" :model="spuInfo" ref="formRef" :rules="rules">
     <!-- spu名称 -->
     <el-form-item label="SPU名称" prop="spuName">
       <el-input
@@ -10,7 +10,7 @@
     </el-form-item>
 
     <!-- spu品牌 -->
-    <el-form-item label="SPU品牌" prop="tmName">
+    <el-form-item label="SPU品牌" prop="tmId">
       <el-select placeholder="请输入SPU品牌" v-model="spuInfo.tmId">
         <el-option
           v-for="trademark in trademarkList"
@@ -283,7 +283,7 @@ const toView = (row: SpuSaleAttrModel) => {
       baseSaleAttrId: row.baseSaleAttrId as number,
       saleAttrValueName: saleAttrValueName.value,
     });
-    console.log(saleAttrValueName.value);
+    // console.log(saleAttrValueName.value);
   }
   // 清空文本框中的数据
   saleAttrValueName.value = "";
@@ -329,7 +329,7 @@ const rules = reactive<FormRules>({
   // spu名称的
   spuName: [{ required: true, message: "必须输入SPU名称", trigger: "blur" }],
   // spu的品牌
-  tmName: [{ required: true, message: "请选择SPU品牌", trigger: "change" }],
+  tmId: [{ required: true, message: "请选择SPU品牌", trigger: "change" }],
   // spu的描述
   description: [
     { required: true, message: "必须输入SPU描述信息", trigger: "blur" },
@@ -357,7 +357,7 @@ const rules = reactive<FormRules>({
 const saveSpuInfo = () => {
   // 表单验证
   formRef.value?.validate(async (vaild) => {
-    if (vaild) return false;
+    if (!vaild) return false;
     // 过滤销售属性对象数组中的数据
     spuInfo.spuSaleAttrList = spuInfo.spuSaleAttrList.filter((item) => {
       // 属性值数组的数据是否存在
@@ -376,6 +376,8 @@ const saveSpuInfo = () => {
     if (spuInfo.spuSaleAttrList.length === 0) return false;
     //准备三级分类的id
     spuInfo.category3Id = categoryStore.getCategory3Id
+   
+    
     // 调用接口
     try {
       await addOrUpdateSpuInfo(spuInfo);
