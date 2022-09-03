@@ -56,7 +56,7 @@
             <el-option
               v-for="val in attr.attrValueList"
               :key="val.id"
-              :value="val.id + '_' + attr.id"
+              :value="val.attrId + '_' + attr.id"
               :label="val.valueName"
             ></el-option>
           </el-select>
@@ -91,11 +91,13 @@
     <!-- 图片列表 -->
     <el-form-item label="图片列表">
       <el-table
+      ref="tableRef"
         row-key="id"
         :data="spuImageList"
         stripe
         style="width: 100%"
         border
+          @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="图片">
@@ -138,7 +140,7 @@ export default {
 </script>
 <script lang="ts" setup>
 // 引入ref
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted ,nextTick} from "vue";
 // 引入枚举类型
 import { ShowOrHide } from "../types";
 // 引入平台属性对象数组类型
@@ -156,6 +158,8 @@ import { getSpuSaleAttrListApi, getSpuImageListApi } from "@/api/product/spu";
 // 引入仓库的数据
 import { useCategoryStore } from "@/stores/category";
 import { SkuInfoModel } from "@/api/product/model/skuModel";
+import { ElTable } from "element-plus";
+const tableRef = ref<InstanceType<typeof ElTable>>();
 // 引入父组件传递进来的自定义事件
 const emits = defineEmits(["setCurrentShowStatus"]);
 // 定义父组件传递数据的接口
@@ -197,6 +201,8 @@ onMounted(async () => {
     category3Id: categoryStore.getCategory3Id,
   });
 });
+
+
 // 页面加载完毕后,获取spu下所有的销售属性数组数据
 onMounted(async () => {
   spuSaleAttrList.value = await getSpuSaleAttrListApi(props.spu.id);
@@ -208,12 +214,14 @@ onMounted(async () => {
   spuImageList.value.forEach((item) => {
     item.isDefault = 0;
   });
+  // 设置第一张图片是默认的效果
+  spuImageList.value[0]?spuImageList.value[0].isDefault =1 :undefined
+  nextTick(()=>{
+    tableRef.value?.toggleRowSelection(spuImageList.value[0],true)
+  })
 });
 
-import { ElTable } from "element-plus";
-const tableRef = ref<InstanceType<typeof ElTable>>();
-
-// 设置某个图片为默认
+// 设置某张个图片为默认
 const setDefault = (row: SpuImageModel) => {
   // 遍历数组,设置每个图片为非默认值状态
   spuImageList.value.forEach((item) => {
