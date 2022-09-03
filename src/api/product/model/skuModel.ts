@@ -31,6 +31,7 @@ export interface SkuSaleAttrValueModel{
     saleAttrName?:string            //销售属性名字
     saleAttrValueName?:string       //销售属性值名字
     saleAttrValueId:number          //销售属性值id
+    isDefault?:number
 }
 // sku的销售属性对象数组接口类型
 export type SkuSaleAttrValueListModel =SkuSaleAttrValueModel[]
@@ -41,7 +42,7 @@ export interface SkuInfoModel{
     category3Id?:number         //三级分类的id
     spuId?:number               //spu的id
     price:number                //价格
-    tmId:number                 //品牌的id
+    tmId?:number                 //品牌的id
     skuDefaultImg:string        //默认图片的地址
     skuDesc:string              //描述
     weight:string               //重量

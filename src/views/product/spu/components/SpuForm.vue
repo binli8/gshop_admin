@@ -1,7 +1,7 @@
 <template>
-  <el-form label-width="120px">
+  <el-form label-width="120px" ref="formRef" :model="spuInfo" :rules="rules">
     <!--SPU名称  -->
-    <el-form-item label="SPU名称">
+    <el-form-item label="SPU名称" prop="spuName">
       <el-input
         type="text"
         placeholder="请输入SPU名称"
@@ -10,7 +10,7 @@
     </el-form-item>
 
     <!--SPU品牌  -->
-    <el-form-item label="SPU品牌">
+    <el-form-item label="SPU品牌" prop="tmId">
       <el-select placeholder="SPU品牌" v-model="spuInfo.tmId">
         <el-option
           v-for="(tm, index) in trademarkList"
@@ -22,7 +22,7 @@
     </el-form-item>
 
     <!-- SPU描述 -->
-    <el-form-item label="SPU描述">
+    <el-form-item label="SPU描述" prop="description">
       <el-input
         type="textarea"
         rows="4"
@@ -32,7 +32,7 @@
     </el-form-item>
 
     <!-- SPU图片 -->
-    <el-form-item label="SPU图片">
+    <el-form-item label="SPU图片" prop="spuImageList">
       <el-upload
         v-model:file-list="spuInfo.spuImageList"
         :action="`${BASE_URL}/admin/product/fileUpload`"
@@ -50,19 +50,25 @@
 
     <!-- 销售属性 -->
     <el-form-item label="销售属性">
-      <el-select type="text" placeholder="请选择销售属性" v-model="baseSaleIdOrName">
+      <el-select
+        type="text"
+        :placeholder="saleAttrText"
+        v-model="baseSaleIdOrName"
+      >
         <el-option
-          v-for="(attr, index) in baseSaleAttrList"
-          :key="index"
-          :label="attr.Name"
-          :value="attr.name"
+          v-for="attr in unSelectedSaleAttrList"
+          :key="attr.id"
+          :label="attr.name"
+          :value="attr.id + '_' + attr.name"
         />
       </el-select>
-      <el-button icon="Plus" type="primary">添加销售属性</el-button>
+      <el-button icon="Plus" type="primary" @click="addSaleAttr"
+        >添加销售属性</el-button
+      >
     </el-form-item>
 
     <!-- 表格 -->
-    <el-form-item>
+    <el-form-item prop="spuSaleAttrList">
       <el-table
         row-key="id"
         :data="spuInfo.spuSaleAttrList"
@@ -119,10 +125,12 @@
     </el-form-item>
 
     <!-- 两个按钮 -->
-    <el-button type="primary">保存</el-button>
-    <el-button @click="$emit('setCurrentShowStatus', ShowOrHide.SPU_LIST)"
-      >取消</el-button
-    >
+    <el-form-item>
+      <el-button type="primary" @click="saveSpuInfo">保存</el-button>
+      <el-button @click="$emit('setCurrentShowStatus', ShowOrHide.SPU_LIST)"
+        >取消</el-button
+      >
+    </el-form-item>
   </el-form>
 </template>
 <script lang="ts">
@@ -132,7 +140,7 @@ export default {
 </script>
 <script lang="ts" setup>
 // 引入ref
-import { onMounted, reactive, ref, nextTick } from "vue";
+import { onMounted, reactive, ref, nextTick, computed } from "vue";
 // 引入element组件库
 import { ElMessage } from "element-plus";
 import { Plus, Delete } from "@element-plus/icons-vue";
@@ -141,6 +149,8 @@ import type {
   UploadUserFile,
   UploadFile,
   UploadFiles,
+  FormRules,
+  FormInstance,
 } from "element-plus";
 // 引入枚举类型标识
 import { ShowOrHide } from "../types";
@@ -148,7 +158,7 @@ import { ShowOrHide } from "../types";
 import type { TrademarkListModel } from "@/api/product/model/trademarkModel";
 // 引入基础销售属性数组的类型和spu图片数组接口函数和spu销售属性数组接口函数
 import type {
-   SpuModel ,
+  SpuModel,
   BaseSaleAttrListModel,
   SpuImageListModel,
   SpuSaleAttrValueListModel,
@@ -161,8 +171,10 @@ import {
   getBaseSaleAttrListApi,
   getSpuImageListApi,
   getSpuSaleAttrListApi,
+  addOrupDateSpuInfoApi,
 } from "@/api/product/spu";
-
+// 引入三级分类的仓库
+import { useCategoryStore } from "@/stores/category";
 
 // 定义图片预览效果
 const dialogImageUrl = ref("");
@@ -170,7 +182,7 @@ const dialogVisible = ref(false);
 // 接收父组件传递过来的自定义事件
 const emits = defineEmits(["setCurrentShowStatus"]);
 // 接收父级组件传递过来的spu对象数据
-const props = defineProps<{currentSpuInfo:SpuModel }>();
+const props = defineProps<{ currentSpuInfo: SpuModel }>();
 // 定义spuInfo对象
 const spuInfo = reactive<SpuModel>(props.currentSpuInfo);
 // 对话框图片的根路径地址
@@ -185,7 +197,9 @@ const saleAttrValueName = ref<string>();
 // 定义用来编辑模式的时候产生的文本框对象
 const inputRefs = ref<HTMLInputElement[]>([]);
 // 定义销售属性
-const baseSaleIdOrName = ref<string>()
+const baseSaleIdOrName = ref<string>();
+// 调用三级分类的仓库
+const categoryStore = useCategoryStore();
 
 // 获取所有的品牌数据
 onMounted(async () => {
@@ -194,30 +208,26 @@ onMounted(async () => {
 // 获取所有的基础销售数据数据
 onMounted(async () => {
   baseSaleAttrList.value = await getBaseSaleAttrListApi();
-  
 });
 // 获取spu对象下所有的销售属性数据
 onMounted(async () => {
   // 获取spu对象下的id数据,并且判断数据是否有意义
   const id = spuInfo.id as number;
-  if (!id) return
-    spuInfo.spuSaleAttrList = await getSpuSaleAttrListApi(id);
-    console.log(spuInfo.spuSaleAttrList);
-
+  if (!id) return;
+  spuInfo.spuSaleAttrList = await getSpuSaleAttrListApi(id);
 });
 // 获取spu对象下所有的图片数据
 onMounted(async () => {
   // 获取spu对象下的id数据,并且判断数据是否有意义
   const id = spuInfo.id as number;
-  if (!id) return
-    const spuImageList = await getSpuImageListApi(id); 
-    // 需要把图片对象的数据进行添加(name,url)
-    spuInfo.spuImageList = spuImageList.map((item) => ({
-      ...item,
-      name: item.imgUrl,
-      url: item.imgUrl,
-    }));
-  
+  if (!id) return;
+  const spuImageList = await getSpuImageListApi(id);
+  // 需要把图片对象的数据进行添加(name,url)
+  spuInfo.spuImageList = spuImageList.map((item) => ({
+    ...item,
+    name: item.imgUrl,
+    url: item.imgUrl,
+  }));
 });
 // 上传图片的回调
 const fileList = ref<UploadUserFile[]>([
@@ -282,5 +292,99 @@ const toView = (row: SpuSaleAttrModel) => {
   // 清空文本框中的数据
   saleAttrValueName.value = "";
   row.isShowEdit = false;
+};
+
+// 计算剩余的销售属性对象数组数据
+const unSelectedSaleAttrList = computed(() => {
+  return baseSaleAttrList.value.filter(
+    (bas) =>
+      !spuInfo.spuSaleAttrList?.some((sar) => sar.saleAttrName === bas.name)
+  );
+});
+// 计算选择器中的提示信息
+const saleAttrText = computed(() => {
+  const { length } = unSelectedSaleAttrList.value;
+  return length > 0 ? `还有${length}个未选择` : "没有了";
+});
+// 点击按钮,添加销售属性数据的回调
+const addSaleAttr = () => {
+  // 先判断如果没有选中的数据,则直接返回
+  if (!baseSaleIdOrName.value) return;
+  const [id, name] = baseSaleIdOrName.value.split("_");
+  console.log([id, name]);
+
+  // 当前选中的销售属性数据添加到spu对象的销售属性对象数组中
+  spuInfo.spuSaleAttrList.push({
+    baseSaleAttrId: +id,
+    saleAttrName: name,
+    spuSaleAttrValueList: [],
+  });
+  // 清空已经选中的内容
+  baseSaleIdOrName.value = "";
+};
+
+// 表单验证
+const formSize = ref("default");
+const formRef = ref<FormInstance>();
+const rules = reactive<FormRules>({
+  // spu的名称
+  spuName: [{ required: true, message: "必须输入SPU名称", trigger: "blur" }],
+  // spu的品牌
+  tmId: [{ required: true, message: "必须选中SPU品牌", trigger: "change" }],
+  // spu的描述
+  description: [
+    { required: true, message: "必须输入SPU描述信息", trigger: "blur" },
+  ],
+  // spu的图片数组
+  spuImageList: [
+    {
+      type: "array",
+      required: true,
+      message: "必须要上传至少一张照片",
+      trigger: "change",
+    },
+  ],
+  // 添加的销售属性
+  baseSaleIdOrName: [
+    {
+      type: "array",
+      required: true,
+      message: "必须添加至少一个销售属性",
+      trigger: "change",
+    },
+  ],
+});
+// 定义保存按钮的回调函数
+const saveSpuInfo = () => {
+  // 表单的校验
+  formRef.value?.validate(async (valid) => {
+    if (!valid) return false;
+    // 过滤销售属性对象数组中的数据
+    spuInfo.spuSaleAttrList = spuInfo.spuSaleAttrList.filter((item) => {
+      // 属性值数组的数据是否还在
+      if (item.spuSaleAttrValueList.length === 0) return false;
+      // 此时有数据
+      delete item.isShowEdit;
+      return true;
+    });
+    // 过滤图片数组
+    spuInfo.spuImageList = spuInfo.spuImageList.map((item) => ({
+      spuId: spuInfo.id, //spu的id
+      imgName: item.name as string, //图片的名字
+      imgUrl: item.response ? item.response.data : item.url, //图片的地址
+    })) as SpuImageListModel;
+    // 二次过滤销售属性对象的数组
+    if (spuInfo.spuSaleAttrList.length === 0) return false;
+    // 准备三级分类的id
+    spuInfo.category3Id = categoryStore.getCategory3Id;
+    try {
+      // 验证通过发送请求保存数据
+      await addOrupDateSpuInfoApi(spuInfo);
+      ElMessage.success("保存成功");
+      emits("setCurrentShowStatus", ShowOrHide.SPU_LIST);
+    } catch (error) {
+      ElMessage.error((error as any) || "保存失败");
+    }
+  });
 };
 </script>

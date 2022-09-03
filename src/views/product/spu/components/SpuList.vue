@@ -85,7 +85,7 @@ export default {
 // 引入icon图标
 import { Plus, Delete, InfoFilled, Edit } from "@element-plus/icons-vue";
 // 引入ref,watch
-import { ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 // 引入仓库
 import useCategoryStore from "@/stores/category";
 // 引入spu的相关接口类型
@@ -93,7 +93,7 @@ import type { SpuModel, SpuListModel } from "@/api/product/model/spuModel";
 // 引入spu的相关接口函数
 import { getProductApi } from "@/api/product/spu";
 // 引入sku的相关接口类型
-import type { SkuInfoListModel } from "@/api/product/model/skuModel";
+import type { SkuInfoListModel, SkuInfoModel } from "@/api/product/model/skuModel";
 // 引入sku的相关接口函数
 import { findBySpuIdApi } from "@/api/product/sku";
 // 引入显示或隐藏页面的枚举类型
@@ -174,10 +174,15 @@ const clickToViewSku = async (row: SpuModel) => {
 // 点击显示SpuForm组件
 const showAddSpu = () => {
   emits("setCurrentShowStatus", ShowOrHide.SPU_ADD);
+  emits('setCurrentSpuInfo')
 };
 // 点击显示SkuForm组件
 const showAddSku = (row: SpuModel) => {
   emits("setCurrentShowStatus", ShowOrHide.SKU_ADD);
+  emits('setCurrentSpuInfo',{
+    id:row.id,
+    spuName:row.spuName
+  })
 };
 // 点击显示SpiList组件
 const showUpAddSpu = (row: SpuModel) => {
@@ -189,6 +194,19 @@ const showUpAddSpu = (row: SpuModel) => {
     spuSaleAttrlist: [],
   });
 };
+// 定义skuInfo对象
+const skuInfo =  reactive<SkuInfoModel>({
+    isSale:1,              //上下架标识
+    price:0,           //价格
+    tmId:undefined,      //品牌的id
+    skuDefaultImg:'',        //默认图片的地址
+    skuDesc:'',              //描述
+    weight:'',               //重量
+    skuName:'',              //名字
+    skuAttrValueList:[],      //平台属性数组
+    skuImageList:[],              //图片数组
+    skuSaleAttrValueList:[],      //销售属性数组
+})
 </script>
 <style scoped>
 </style>

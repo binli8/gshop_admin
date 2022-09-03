@@ -49,6 +49,7 @@ export interface SpuModel{
     description:string      //spu 的描述
     spuSaleAttrList:SpuSaleAttrListModel      //spu销售属性对象数组
     spuImageList:SpuImageListModel           //spu的图片对象数组
+    isDefault?:number
 }
 // spu的对象的数组的接口类型
 export type SpuListModel = SpuModel[]
