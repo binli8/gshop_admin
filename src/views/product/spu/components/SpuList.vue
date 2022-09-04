@@ -99,6 +99,8 @@ import { SpuListModel, SpuModel } from "@/api/product/model/spuModel";
 import type { SkuInfoListModel } from "@/api/product/model/skuModel";
 // 引入显示或隐藏的枚举类型
 import { ShowStatus } from "../types";
+import {deleteSpuInfoByIdApi} from '@/api/product/spu'
+import { ElMessage } from 'element-plus';
 
 // 创建仓库对象
 const categoryStore = useCategoryStore();
@@ -199,6 +201,13 @@ const showaddUpdateSpu = (row: SpuModel) => {
     spuImageList: [],
   });
 };
+
+// 删除spu
+const deletsSpuInfo = async(spuId:number)=>{
+  await deleteSpuInfoByIdApi(spuId)
+  ElMessage.success('删除成功')
+  getSpuInfoList()
+}
 </script>
 <style scoped>
 </style>

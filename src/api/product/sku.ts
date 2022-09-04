@@ -48,5 +48,5 @@ export const addSkuInfoApi = (skuInfo: SkuInfoModel) => request.post<any, null>(
 // 修改sku对象的接口函数
 export const updateSkuInfoApi = (skuInfo: SkuInfoModel) => request.post<any, null>(Api.UpdateSkuInfo, skuInfo)
 // 修改或添加sku数据的接口函数
-export const addOrUpdteSkuInfoApi= (skuInfo: SkuInfoModel) => skuInfo.id ? updateSkuInfoApi(skuInfo) : addSkuInfoApi(skuInfo)
+export const addOrUpdateSkuInfoApi= (skuInfo: SkuInfoModel) => skuInfo.id ? updateSkuInfoApi(skuInfo) : addSkuInfoApi(skuInfo)
 
