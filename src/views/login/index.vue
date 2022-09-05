@@ -33,19 +33,19 @@ export default {
 <script lang="ts" setup>
 // 引入用户信息的仓库
 import { useUserInfoStore } from '@/stores/userInfo'
-// 引入的是表单组件标签el-form 对象的类型
+// 引入表单组件标签el-from对象的类型
 import type { FormInstance } from 'element-plus'
-// 引入nextTick,ref,watch
+// 引入nextTick和ref和watch
 import { nextTick, ref, watch } from 'vue'
 // 引入获取路由对象和路由器对象的函数
 import { useRoute, useRouter } from 'vue-router'
-// 获取用户信息的仓库
+// 引入用户信息的仓库对象
 const userInfoStore = useUserInfoStore()
 // 获取路由对象
 const route = useRoute()
 // 获取路由器对象
 const router = useRouter()
-// 收集账号和密码
+// 用来搜集账号和密码
 const loginForm = ref({
   username: 'admin',
   password: '111111'
@@ -58,7 +58,7 @@ const passwordType = ref('password')
 const redirect = ref('')
 // 用来收集文本框的对象
 const passwordRef = ref<HTMLInputElement>()
-// 用来收集form表单的对象
+// 收集form表单的对象
 const formRef = ref<FormInstance>()
 // 用来校验账号
 const validateUsername = (rule: any, value: any, callback: any) => {
@@ -103,26 +103,24 @@ const showPwd = () => {
     passwordType.value = 'password'
   }
   nextTick(() => {
-    //focus 获取焦点
+    // 获取焦点
     passwordRef.value?.focus()
   })
 }
-
 // 点击按钮,实现登录
 const handleLogin = async () => {
-  // 调用表单的验证规则,所有的表单验证都通过了,就会继续向后执行
+  // 调用表单验证规则,所有的表单验证都通过了,就会继续向后执行
   await formRef.value?.validate()
-  // 验证通过后,开启加载标识
+  // 验证通过了,开启的加载标识
   loading.value = true
-  // 取出账号和密码
   const { username, password } = loginForm.value
   try {
     // 通过pinia调用登录的action,传入账号和密码
     await userInfoStore.login(username, password)
-    // 登录成功跳转
+    // 登录成功则跳转
     router.push({ path: redirect.value || '/' })
   } finally {
-    // 关闭加载效果
+    // 关闭加载的效果
     loading.value = false
   }
 }

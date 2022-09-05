@@ -130,7 +130,7 @@
     <!-- 两个按钮 -->
     <el-form-item>
       <el-button type="primary" @click="saveSkuInfo">保存</el-button>
-      <el-button @click="$emit('setCurrentShowStatus', ShowOrHide.SPU_LIST)"
+      <el-button @click="$emit('setCurrentShowStatus', ShowStatus.SPU_LIST)"
         >取消</el-button
       >
     </el-form-item>
@@ -145,7 +145,7 @@ export default {
 // 引入ref
 import { ref, reactive, onMounted, nextTick } from "vue";
 // 引入显示或者隐藏的界面的枚举类型
-import {ShowOrHide } from "../types";
+import { ShowStatus } from "../types";
 // 引入icon
 import { Plus, Delete } from "@element-plus/icons-vue";
 import { ElMessage, ElTable } from "element-plus";
@@ -337,10 +337,12 @@ const saveSkuInfo = () => {
     // 提示信息
     ElMessage.success('操作成功')
     // 关闭页面
-    emit('setCurrentShowStatus',ShowOrHide.SPU_LIST)
+    emit('setCurrentShowStatus',ShowStatus.SPU_LIST)
   });
 };
 
 </script>
 <style scoped>
 </style>
+
+

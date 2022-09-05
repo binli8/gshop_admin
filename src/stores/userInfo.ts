@@ -4,16 +4,14 @@ import type { UserInfoState } from './interface';
 import { ElMessage } from 'element-plus'
 import { staticRoutes } from '@/router/routes'
 // 引入登录相关的接口(登录接口函数,获取用户信息的接口函数,退出的接口函数)
-import { loginApi, infoApi, logoutApi } from '@/api/acl/login'
-
-
+import { loginApi, getUserInfoApi, logoutApi } from '@/api/acl/login'
 
 /**
  * 用户信息
  * @methods setUserInfos 设置用户信息
  */
 export const useUserInfoStore = defineStore('userInfo', {
-  // 状态数据
+
   state: (): UserInfoState => ({
     token: getToken() as string,
     name: '',
@@ -24,22 +22,22 @@ export const useUserInfoStore = defineStore('userInfo', {
   actions: {
     // 登录的方法,传入用户名和密码
     async login(username: string, password: string) {
-      // 登录,传入用户名和密码
+      // 登录,传入账号和密码
       const { token } = await loginApi(username, password)
-      // 储存token
+      // 存储token
       this.token = token
-      // 储存token
+      // 存储token
       setToken(token)
     },
 
     // 获取用户信息的方法
     async getInfo() {
-      const result = await infoApi()
-      // 储存用户信息
-      this.name = result.name       //用户名
-      this.avatar = result.avatar   //头像
-      // 储存按键和角色和路由的相关信息 
+      const result = await getUserInfoApi()
+      // 存储用户信息
+      this.name = result.name     //用户名
+      this.avatar = result.avatar // 头像
       this.menuRoutes = staticRoutes
+      // 存储按钮和角色的路由的相关信息
     },
 
     // 重置用户信息的方法

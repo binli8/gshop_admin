@@ -1,4 +1,4 @@
-// 定义品牌对象的接口
+// 定义品牌对象的接口类型
 export interface TrademarkModel{
     id?:number
     tmName:string
@@ -12,6 +12,6 @@ export interface TrademarkPageListModel{
     total:number
 }
 
-// 接口类型         使用interface定义的数据的类型
-// 接口地址         enum枚举
-// 接口函数         函数
+// 接口类型             --- 使用interface定义的数据类型
+// 接口地址             ---enum枚举
+// 接口函数             ---函数  

@@ -1,6 +1,6 @@
 // 设置token的key
 const TokenKey = 'vue_admin_gshop'
-// 从缓存中读取token信息
+//  从缓存中读取token信息
 export function getToken() {
   return localStorage.getItem(TokenKey)
 }

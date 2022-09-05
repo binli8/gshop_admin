@@ -25,6 +25,7 @@ service.interceptors.request.use(
 		const token = userInfoStore.token
 		// 判断token是否存在
 		if (token) {
+			// 转类型
 			(config.headers as any)['token'] = token
 		}
 		return config;
