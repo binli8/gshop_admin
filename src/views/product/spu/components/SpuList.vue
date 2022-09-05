@@ -45,6 +45,7 @@
           size="small"
           type="danger"
           :icon="Delete"
+          @click="deletsSpuInfo(row.id)"
           title="删除SPU"
         ></el-button>
       </template>
