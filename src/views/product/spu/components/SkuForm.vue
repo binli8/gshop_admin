@@ -130,7 +130,7 @@
     <!-- 两个按钮 -->
     <el-form-item>
       <el-button type="primary" @click="saveSkuInfo">保存</el-button>
-      <el-button @click="$emit('setCurrentShowStatus', ShowStatus.SPU_LIST)"
+      <el-button @click="$emit('setCurrentShowStatus', ShowOrHide.SPU_LIST)"
         >取消</el-button
       >
     </el-form-item>
@@ -337,7 +337,7 @@ const saveSkuInfo = () => {
     // 提示信息
     ElMessage.success('操作成功')
     // 关闭页面
-    emit('setCurrentShowStatus',ShowStatus.SPU_LIST)
+    emit('setCurrentShowStatus',ShowOrHide.SPU_LIST)
   });
 };
 
