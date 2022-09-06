@@ -1,5 +1,5 @@
 <template>
-  <div>第二页</div>
+  <div>第二个</div>
 </template>
 <script lang="ts">
 export default {

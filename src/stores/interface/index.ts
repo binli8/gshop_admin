@@ -7,8 +7,8 @@ export interface UserInfoState {
 	name: string;
 
   menuRoutes: RouteRecordRaw[] // 用于生成导航菜单的路由列表
-  roles:string[]      //角色名字数组
-  authBtnList:string[]  //按钮标识数组 
+  roles: string[], // 角色名字数组
+  authBtnList: string[] // 按钮标识数组
 }
 
 

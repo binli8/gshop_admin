@@ -5,4 +5,3 @@ Mock.mock('/mock/report/data', {
   code: 2000,
   data
 })
-

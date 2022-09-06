@@ -44,8 +44,16 @@ export const staticRoutes: Array<RouteRecordRaw> = [
       }
     }]
   },
- 
   
+  // /* 匹配任意的路由 必须最后注册 */
+  // {
+  //   path: '/:pathMatch(.*)',
+  //   name: 'Any',
+  //   redirect: '/404',
+  //   meta: {
+  //     hidden: true
+  //   }
+  // }
 ];
 
 
@@ -53,8 +61,8 @@ export const staticRoutes: Array<RouteRecordRaw> = [
  * 定义动态路由
  */
 export const allAsyncRoutes: Array<RouteRecordRaw> = [
-   // 权限管理路由
-   {
+  // 权限管理路由
+  {
     name: 'Acl',
     path: '/acl',
     component: () => import('@/layout/index.vue'),
@@ -142,7 +150,7 @@ export const allAsyncRoutes: Array<RouteRecordRaw> = [
 
 
 /* 匹配任意的路由 必须最后注册 */
-export const anyRoute: RouteRecordRaw = {
+export const anyRoute:RouteRecordRaw = {
   path: '/:pathMatch(.*)',
   name: 'Any',
   redirect: '/404',

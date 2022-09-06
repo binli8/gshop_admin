@@ -1,11 +1,11 @@
 import axios from 'axios';
-import type {AxiosResponse} from 'axios';
+import type { AxiosResponse } from 'axios';
 import { ElMessage } from 'element-plus';
 
 /* 定义response对象的data接口 */
 interface ResponseData<T> {
-  code: number;
-  data: T;
+	code: number;
+	data: T;
 }
 
 // 配置新建一个 axios 实例
