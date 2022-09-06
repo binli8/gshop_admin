@@ -7,6 +7,7 @@
     <div v-if="isShowEditAttr">
       <!--按钮-->
       <el-button
+       v-has="'btn.Attr.add'"
         :icon="Plus"
         type="primary"
         @click="showAddAttr"
@@ -15,7 +16,7 @@
       >
       <!--表格-->
       <el-table
-        v-has="'btn.Attr.add'"
+       
         row-key="id"
         v-loading="loading"
         :data="attrList"
