@@ -15,6 +15,7 @@
       >
       <!--表格-->
       <el-table
+        v-has="'btn.Attr.add'"
         row-key="id"
         v-loading="loading"
         :data="attrList"
@@ -36,7 +37,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150">
-          <template #default="{row}">
+          <template #default="{ row }">
             <el-button
               size="small"
               type="primary"
@@ -44,13 +45,15 @@
               @click="showUpdateAttr(row)"
             ></el-button>
 
-            <el-popconfirm  @confirm="deleteData(row)" :title="`您确认删除吗${row.attrName}?`">
+            <el-popconfirm
+              @confirm="deleteData(row)"
+              :title="`您确认删除吗${row.attrName}?`"
+            >
               <template #reference>
                 <el-button
                   size="small"
                   type="danger"
                   :icon="Delete"
-                 
                 ></el-button>
               </template>
             </el-popconfirm>
@@ -157,7 +160,11 @@ import type {
 // 引入仓库
 import { useCategoryStore } from "@/stores/category";
 // 引入-根据三级分类的id获取对应的平台属性对象数组的接口函数
-import { getAttrInfoListApi, addOrUpdateAttrApi,deleteAttrByIdApi } from "@/api/product/attr";
+import {
+  getAttrInfoListApi,
+  addOrUpdateAttrApi,
+  deleteAttrByIdApi,
+} from "@/api/product/attr";
 import { ElMessage } from "element-plus";
 // 表格加载标识
 const loading = ref<boolean>(false);
@@ -271,19 +278,19 @@ const save = async () => {
 };
 
 // 删除按钮的回调
-const deleteData = async (row:AttrModel) =>{
+const deleteData = async (row: AttrModel) => {
   try {
     // 发送请求删除数据
-    await deleteAttrByIdApi(row.id as number)
+    await deleteAttrByIdApi(row.id as number);
     // 提示成功信息
-    ElMessage.success('操作成功')
+    ElMessage.success("操作成功");
     // 刷新
-    getAttrList()
+    getAttrList();
   } catch (error) {
     // 提示失败信息
-    ElMessage.error(error as any || '操作失败')
+    ElMessage.error((error as any) || "操作失败");
   }
-}
+};
 
 // 组件卸载之前,清空数据
 onBeforeUnmount(() => {

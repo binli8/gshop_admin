@@ -77,25 +77,25 @@
       size="50%"
     >
       <!-- 名称 -->
-      <er-row>
+      <el-row>
         <el-col :span="5">名称:</el-col>
         <el-col :span="16">{{ skuInfo?.skuName }}</el-col>
-      </er-row>
+      </el-row>
 
       <!-- 描述 -->
-      <er-row>
+      <el-row>
         <el-col :span="5">描述:</el-col>
         <el-col :span="16">{{ skuInfo?.skuDesc }}</el-col>
-      </er-row>
+      </el-row>
 
       <!-- 价格(元) -->
-      <er-row>
+      <el-row>
         <el-col :span="5">价格(元):</el-col>
         <el-col :span="16">{{ skuInfo?.price }}</el-col>
-      </er-row>
+      </el-row>
 
       <!-- 平台属性 -->
-      <er-row>
+      <el-row>
         <el-col :span="5">平台属性:</el-col>
         <el-col :span="18">
           <div
@@ -113,7 +113,7 @@
           </div>
           <div v-else>无数据</div>
         </el-col>
-      </er-row>
+      </el-row>
 
       <!-- 销售属性 -->
       <el-row>
@@ -193,7 +193,7 @@ const loading = ref<boolean>(false);
 // 定义是否显示抽屉组件的标识
 const isShowSkuInfo = ref<boolean>(false);
 const skuInfo = ref<SkuInfoModel>();
-console.log(skuInfo);
+// console.log(skuInfo);
 
 // 刷新页面
 const getSkuInfoList = async (

@@ -44,6 +44,23 @@ export const staticRoutes: Array<RouteRecordRaw> = [
       }
     }]
   },
+  
+  // /* 匹配任意的路由 必须最后注册 */
+  // {
+  //   path: '/:pathMatch(.*)',
+  //   name: 'Any',
+  //   redirect: '/404',
+  //   meta: {
+  //     hidden: true
+  //   }
+  // }
+];
+
+
+/**
+ * 定义动态路由
+ */
+export const allAsyncRoutes: Array<RouteRecordRaw> = [
   // 权限管理路由
   {
     name: 'Acl',
@@ -89,7 +106,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
   // 商品管理
   {
     path: '/product',
-    name: 'Priouct',
+    name: 'Product',
     component: () => import('@/layout/index.vue'),
     redirect: '/product/category/list',
     meta: {
@@ -129,19 +146,15 @@ export const staticRoutes: Array<RouteRecordRaw> = [
       },
     ]
   },
-  /* 匹配任意的路由 必须最后注册 */
-  {
-    path: '/:pathMatch(.*)',
-    name: 'Any',
-    redirect: '/404',
-    meta: {
-      hidden: true
-    }
-  }
 ];
 
 
-/**
- * 定义动态路由
- */
-export const allAsyncRoutes: Array<RouteRecordRaw> = [];
+/* 匹配任意的路由 必须最后注册 */
+export const anyRoute:RouteRecordRaw = {
+  path: '/:pathMatch(.*)',
+  name: 'Any',
+  redirect: '/404',
+  meta: {
+    hidden: true
+  }
+}
