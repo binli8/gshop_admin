@@ -7,6 +7,7 @@
     <div v-if="isShowEditAttr">
       <!--按钮-->
       <el-button
+      v-has="'btn.Attr.add'"
         :icon="Plus"
         type="primary"
         @click="showAddAttr"

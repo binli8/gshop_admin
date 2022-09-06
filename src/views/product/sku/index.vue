@@ -38,7 +38,12 @@
             :icon="Bottom"
             @click="onOrCancelSale(row, 0)"
           />
-          <el-button size="small" type="primary" :icon="Edit" @click="alterSku" />
+          <el-button
+            size="small"
+            type="primary"
+            :icon="Edit"
+            @click="alterSku"
+          />
           <el-button
             size="small"
             type="info"
@@ -77,25 +82,25 @@
       size="50%"
     >
       <!-- 名称 -->
-      <er-row>
+      <el-row>
         <el-col :span="5">名称:</el-col>
         <el-col :span="16">{{ skuInfo?.skuName }}</el-col>
-      </er-row>
+      </el-row>
 
       <!-- 描述 -->
-      <er-row>
+      <el-row>
         <el-col :span="5">描述:</el-col>
         <el-col :span="16">{{ skuInfo?.skuDesc }}</el-col>
-      </er-row>
+      </el-row>
 
       <!-- 价格(元) -->
-      <er-row>
+      <el-row>
         <el-col :span="5">价格(元):</el-col>
         <el-col :span="16">{{ skuInfo?.price }}</el-col>
-      </er-row>
+      </el-row>
 
       <!-- 平台属性 -->
-      <er-row>
+      <el-row>
         <el-col :span="5">平台属性:</el-col>
         <el-col :span="18">
           <div
@@ -113,34 +118,40 @@
           </div>
           <div v-else>无数据</div>
         </el-col>
-      </er-row>
+      </el-row>
 
       <!-- 销售属性 -->
       <el-row>
         <el-col :span="5">销售属性:</el-col>
-        <el-col :span="18"></el-col>
-        <div
-          v-if="
-            skuInfo?.skuSaleAttrValueList &&
-            skuInfo?.skuSaleAttrValueList.length > 0
-          "
-        >
-          <el-tag
-            type="success"
-            v-for="attr in skuInfo?.skuSaleAttrValueList"
-            :key="attr.id"
-            style="margin-right: 5px"
-            >{{ attr.saleAttrName }}-{{ attr.saleAttrValueName }}</el-tag
+        <el-col :span="18">
+          <div
+            v-if="
+              skuInfo?.skuSaleAttrValueList &&
+              skuInfo?.skuSaleAttrValueList.length > 0
+            "
           >
-        </div>
-        <div v-else>无数据</div>
+            <el-tag
+              type="success"
+              v-for="attr in skuInfo?.skuSaleAttrValueList"
+              :key="attr.id"
+              style="margin-right: 5px"
+              >{{ attr.saleAttrName }}-{{ attr.saleAttrValueName }}</el-tag
+            >
+          </div>
+          <div v-else>无数据</div>
+        </el-col>
       </el-row>
 
       <!-- 商品图片 -->
       <el-row>
         <el-col :span="5">商品图片:</el-col>
         <el-col :span="16">
-          <el-carousel trigger="click" height="400px" style="width: 400px" class="sku-carousel">
+          <el-carousel
+            trigger="click"
+            height="400px"
+            style="width: 400px"
+            class="sku-carousel"
+          >
             <el-carousel-item
               v-for="item in skuInfo?.skuImageList"
               :key="item.id"
@@ -154,7 +165,6 @@
         </el-col>
       </el-row>
     </el-drawer>
-
   </el-card>
 </template>
 <script lang="ts">
@@ -238,9 +248,9 @@ const ShowSkuInfo = async (row: SkuInfoModel) => {
 };
 
 // 修改sku
-const alterSku = () =>{
-  ElMessage.warning('功能正在开发中')
-}
+const alterSku = () => {
+  ElMessage.warning("功能正在开发中");
+};
 </script>
 
 
