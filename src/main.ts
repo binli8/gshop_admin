@@ -11,8 +11,10 @@ import './permission'
 import has from './directives/has'
 import {vueEcharts} from './plugins/echarts'
 import './mockServer'
+import CommonCard from '@/views/home/components/CommonCard.vue'
 const app = createApp(App)
-
+// 注册全局组件
+app.component(CommonCard.name,CommonCard)
 ElSvg(app)
 app.use(pinia)
   .use(router)
