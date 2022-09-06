@@ -1,17 +1,9 @@
 <template>
-  <el-row :gutter="10" class="top-view">
-    <el-col :span="6">
-      <TodaySales />
-    </el-col>
-    <el-col :span="6">
-      <TodayOrders />
-    </el-col>
-    <el-col :span="6">
-      <TodayUsers />
-    </el-col>
-    <el-col :span="6">
-      <TotalUsers />
-    </el-col>
+  <el-row :gutter="20" class="top-view">
+    <el-col :span="6"><TodaySales /></el-col>
+    <el-col :span="6"><TodayOrders /></el-col>
+    <el-col :span="6"><TodayUsers /></el-col>
+    <el-col :span="6"><TotalUsers /></el-col>
   </el-row>
 </template>
 <script lang="ts">
