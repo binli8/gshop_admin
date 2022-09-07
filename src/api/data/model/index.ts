@@ -22,6 +22,7 @@ export interface ReportDataModel {
     usersLastMonth?: number;
     userGrowthLastDay?: string;
     userGrowthLastMonth?: string;
+    usersLastDay?:number
   
     // 销售额与访问量
     orderFullYearAxis?: string[];

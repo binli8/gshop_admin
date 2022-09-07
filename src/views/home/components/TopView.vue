@@ -31,6 +31,7 @@ import TotalUsers from "./TotalUsers.vue";
   border-width: 5px;
   border-style: solid;
   border-color: transparent transparent green transparent;
+  margin-right: 10px;
 }
 // 下箭头
 .decrement {
