@@ -1,6 +1,6 @@
 <template>
   <common-card title="累计用户数" :value="numberFormat(usersTotal)">
-    <!-- <div style="width: 100%; height: 100%" ref="chartRef"></div> -->
+    <v-chart :option="getOption()" autoresize></v-chart>
     <template #bottom>
       <div class="compare-wrap">
         <div class="compare">
@@ -44,21 +44,64 @@ const userGrowthLastDay = computed(
 const userGrowthLastMonth = computed(
   () => dataStore.reportData.userGrowthLastMonth
 );
+
+const getOption = () => {
+  return {
+    // 横轴
+    xAxis: {
+      show: false,
+      min: 0,
+      max: usersTotal.value,
+    },
+    // 纵轴
+    yAxis: {
+      show: false,
+      type: "category",
+    },
+    //系列组件
+    series: [
+      {
+        name: "累计用户数",
+        type: "bar",
+        data: [(usersTotal.value as number) - (usersLastMonth.value as number)],
+        // 柱条的宽度
+        barWidth: 10,
+        // 开始背景色
+        showBackground: true,
+        // 柱条的颜色
+        color: "yellowgreen",
+        // 文本内容
+        label: {
+          // 显示文本
+          show: true,
+          // 文本内容
+          formatter: "|",
+          // 显示位置
+          position: "right",
+          // 文本颜色
+          color: "yellowgreen",
+        },
+      },
+    ],
+    // 四周距离
+    grid: { left: 0, top: 0, right: 0, bottom: 0 },
+    // 提示框
+    tooltip: { trigger: "axis" ,confirm: true,},
+  };
+};
 </script>
 <style lang="scss" scoped>
 .compare-wrap {
   display: flex;
   font-size: 12px;
-  font-weight: 600;
   flex-direction: column;
   height: 100%;
   color: #666;
-  margin-right: 10px !important;  
+  margin-right: 10px !important;
   .compare {
     display: flex;
     flex: 1;
     align-items: center;
-    
   }
 }
 </style>
