@@ -16,8 +16,8 @@ export interface SkuImageModel{
     skuId?:number       //sku的id
     imgName:string      //图片名字
     imgUrl:string       //图片地址
-    isDefault:string    //是否是默认的标记
-    spuImgId:number     //spu的图片的id
+    isDefault?:string    //是否是默认的标记
+    spuImgId?:number     //spu的图片的id
 }
 // sku的图片对象数组接口类型
 export type SkuImageListModel = SkuImageModel[]

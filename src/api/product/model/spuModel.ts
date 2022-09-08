@@ -18,7 +18,6 @@ export interface SpuSaleAttrModel {
     saleAttrName: string             //销售属性名字
     baseSaleAttrId?: number          //所属的id
     isShowEdit?:boolean
-
 }
 // spu的销售属性对象数组的接口类型
 export type SpuSaleAttrListModel = SpuSaleAttrModel[]
@@ -35,7 +34,7 @@ export interface SpuImageModel {
     response?: {        //上传图片响应的数据
         data: string
     }
-    isDefault?: number  //是否是默认的图片
+    isDefault?: string  //是否是默认的图片
 }
 // spu的图片对象数组的接口类型
 export type SpuImageListModel = SpuImageModel[]
@@ -66,8 +65,8 @@ export interface SpupageListParamsModel {
     total: number            //总条数
 }
 // 定义spu分页接口函数所需要的参数的接口类型
-export interface SpuPageParamsCategoryIdModel {
-    page: number         //当前页
-    limit: number        //每页记录几条数据
-    category3Id: number  //三级分类的id
+export interface SpuPageParamsCategoryIdModel{
+    page:number         //当前页
+    limit:number        //每页记录几条数据
+    category3Id:number  //三级分类的id
 }

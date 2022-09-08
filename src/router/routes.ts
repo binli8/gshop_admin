@@ -44,11 +44,69 @@ export const staticRoutes: Array<RouteRecordRaw> = [
       }
     }]
   },
+  
+  // /* 匹配任意的路由 必须最后注册 */
+  // {
+  //   path: '/:pathMatch(.*)',
+  //   name: 'Any',
+  //   redirect: '/404',
+  //   meta: {
+  //     hidden: true
+  //   }
+  // }
+];
 
-  /* 商品管理  */
+
+/**
+ * 定义动态路由
+ */
+export const allAsyncRoutes: Array<RouteRecordRaw> = [
+  // 权限管理路由
+  {
+    name: 'Acl',
+    path: '/acl',
+    component: () => import('@/layout/index.vue'),
+    redirect: '/acl/user/list',
+    meta: { title: '权限管理', icon: 'ele-Setting' },
+    children: [
+      {
+        name: 'User',
+        path: '/acl/user/list',
+        component: () => import('@/views/acl/user/index.vue'),
+        meta: { title: '用户管理' }
+      },
+      {
+        name: 'Role',
+        path: '/acl/role/list',
+        component: () => import('@/views/acl/role/index.vue'),
+        meta: {
+          title: '角色管理',
+        },
+      },
+      {
+        name: 'RoleAuth',
+        path: '/acl/role/auth',
+        component: () => import('@/views/acl/role/roleAuth.vue'),
+        meta: {
+          title: '角色管理',
+          hidden: true,
+          activeMenu: '/acl/role/list',
+        },
+      },
+      {
+        name: 'Permission',
+        path: '/acl/permission/list',
+        component: () => import('@/views/acl/permission/index.vue'),
+        meta: {
+          title: '菜单管理',
+        }
+      }
+    ]
+  },
+  // 商品管理
   {
     path: '/product',
-    name: 'prdouct',
+    name: 'Product',
     component: () => import('@/layout/index.vue'),
     redirect: '/product/category/list',
     meta: {
@@ -57,61 +115,46 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     },
     children: [
       {
+        path: 'catgory/list',
         name: 'Category',
-        path: 'category/list',
         component: () => import('@/views/product/category/index.vue'),
-        meta: {
-          title: '分类管理'
-        },
+        meta: { title: '分类管理' }
       },
       {
-        name: 'Trademark',
         path: 'trademark/list',
+        name: 'Trademark',
         component: () => import('@/views/product/trademark/index.vue'),
-        meta: {
-          title: '品牌管理'
-        },
+        meta: { title: '品牌管理' }
       },
       {
-        name: 'Attr',
         path: 'attr/list',
+        name: 'Attr',
         component: () => import('@/views/product/attr/index.vue'),
-        meta: {
-          title: '平台属性管理'
-        },
+        meta: { title: '平台属性管理' }
       },
       {
-        name: 'Spu',
         path: 'spu/list',
+        name: 'Spu',
         component: () => import('@/views/product/spu/index.vue'),
-        meta: {
-          title: 'SPU管理'
-        },
+        meta: { title: 'SPU管理' }
       },
       {
-        name: 'Sku',
         path: 'sku/list',
+        name: 'Sku',
         component: () => import('@/views/product/sku/index.vue'),
-        meta: {
-          title: 'Sku管理'
-        },
+        meta: { title: 'SKU管理' }
       },
     ]
   },
-
-  /* 匹配任意的路由 必须最后注册 */
-  {
-    path: '/:pathMatch(.*)',
-    name: 'Any',
-    redirect: '/404',
-    meta: {
-      hidden: true
-    }
-  }
 ];
 
 
-/**
- * 定义动态路由
- */
-export const allAsyncRoutes: Array<RouteRecordRaw> = [];
+/* 匹配任意的路由 必须最后注册 */
+export const anyRoute:RouteRecordRaw = {
+  path: '/:pathMatch(.*)',
+  name: 'Any',
+  redirect: '/404',
+  meta: {
+    hidden: true
+  }
+}

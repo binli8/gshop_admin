@@ -18,3 +18,5 @@ export const getCategory1Api = () => request.get<any, CategoryListModel>(Api.Get
 export const getCategory2Api = (category1Id: number) => request.get<any, CategoryListModel>(Api.GetCategory2 + `/${category1Id}`)
 // 获取三级分类列表数据的接口函数
 export const getCategory3Api = (category2Id: number) => request.get<any, CategoryListModel>(Api.GetCategory3 + `/${category2Id}`)
+
+

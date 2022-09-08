@@ -1,20 +1,23 @@
 <template>
   <!-- 按钮 -->
-  <el-button type="primary" :icon="Plus" @click="clickAddSpu"
-    >添加SPU</el-button
-  >
+  <el-button type="primary" :icon="Plus" @click="showaddSpu">添加SPU</el-button>
+
   <!-- 表格 -->
   <el-table
-    v-loading="loading"
     row-key="id"
+    v-loading="loading"
     :data="spuInfoList"
     stripe
-    style="width: 100%"
     border
+    style="margin-top: 20px"
   >
-    <el-table-column type="index" label="序号" width="80" align="center" />
+    <el-table-column type="index" label="序号" width="80" align="center">
+      <template v-slot="{ $index }">{{
+        pageSize * (current - 1) + $index + 1
+      }}</template>
+    </el-table-column>
     <el-table-column prop="spuName" label="SPU名称" />
-    <el-table-column prop="description" label="SPU描述" />
+    <el-table-column prop="description" label="SKU描述" />
     <el-table-column label="操作">
       <template v-slot="{ row }">
         <el-button
@@ -22,24 +25,29 @@
           type="primary"
           :icon="Plus"
           title="添加SKU"
-          @click="clickAddSku(row)"
+          @click="showaddSku(row)"
         ></el-button>
         <el-button
           size="small"
           type="primary"
           :icon="Edit"
-          title="添加SPU"
-          @click="AddUpSpu(row)"
+          title="修改SPU"
+          @click="showaddUpdateSpu(row)"
         ></el-button>
         <el-button
           size="small"
           type="info"
           :icon="InfoFilled"
           title="查看SKU"
-          @click="showSkuInfoList(row)"
+          @click="clickSkuButton(row)"
         ></el-button>
-        <el-button size="small" type="danger" :icon="Delete" title="删除SPU">
-        </el-button>
+        <el-button
+          size="small"
+          type="danger"
+          :icon="Delete"
+          @click="deletsSpuInfo(row.id)"
+          title="删除SPU"
+        ></el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -49,23 +57,24 @@
     v-model:page-size="pageSize"
     :page-sizes="[3, 6, 9]"
     :small="small"
-    :disabled="disabled"
     background
-    layout="prev, pager, next, jumper,->,sizes,total,"
+    layout="  prev, pager, next, jumper,->,sizes,total"
     :total="total"
-    @size-change="getSpuInfoList(1, val)"
-    @current-change="getSpuInfoList(val, pageSize)"
     style="margin-top: 20px"
+    @current-change="getSpuInfoList(val, pageSize)"
   />
-  <!-- sku列表的对话框 -->
-  <el-dialog v-model="dialogVisible" :title="`${spuInfo?.spuName}==>列表`">
+  <!-- 点击查看按钮弹出对话框 -->
+  <el-dialog v-model="dialogVisible" :title="`${spuInfo?.spuName} => SKU列表`">
     <el-table :data="skuInfoList">
-      <el-table-column property="skuName" label="名称" width="150" />
+      <el-table-column property="skuName" label="名称" />
       <el-table-column property="price" label="价格(元)" width="200" />
       <el-table-column property="weight" label="重量(千克)" />
       <el-table-column label="默认图片">
         <template v-slot="{ row }">
-          <el-image :src="row.skuDefaultImg" style="width:100px,height:100px" />
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="row.skuDefaultImg"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -77,68 +86,73 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { Plus, Delete, Edit, InfoFilled } from "@element-plus/icons-vue";
+// 引入icon图标
+import { Plus, Edit, Delete, InfoFilled } from "@element-plus/icons-vue";
 // 引入ref
-import { ref, watch } from "vue";
-// 引入spu相关的接口类型
-import type { SpuListModel, SpuModel } from "@/api/product/model/spuModel";
-// 引入spu相关的接口函数
+import { ref, reactive, watch } from "vue";
+// 引入spu相关的api接口
 import { getSpuInfoListApi } from "@/api/product/spu";
+import { getSkuInfoListBySpuIdApi } from "@/api/product/sku";
 // 引入分类仓库
 import { useCategoryStore } from "@/stores/category";
-// 引入sku相关的接口类型
+import { SpuListModel, SpuModel } from "@/api/product/model/spuModel";
+// 引入类型
 import type { SkuInfoListModel } from "@/api/product/model/skuModel";
-// 引入sku相关的接口函数
-import { getSkuInfoListBySpuIdApi } from "@/api/product/sku";
+// 引入显示或隐藏的枚举类型
 import { ShowStatus } from "../types";
+import {deleteSpuInfoByIdApi} from '@/api/product/spu'
+import { ElMessage } from 'element-plus';
 
-// 接收父组件传递过来的自定义事件
-const emits = defineEmits(["alterShowOrHide", "setCurrentSpuInfo"]);
-// 定义分类仓库
+// 创建仓库对象
 const categoryStore = useCategoryStore();
 // 定义页码
 const current = ref<number>(1);
-// 定义每条页数
+// 定义每页的条数
 const pageSize = ref<number>(3);
 // 定义总条数
 const total = ref<number>(0);
-// 定义spuinfo数组列表数据
+// 定义spuInfoList数组列表数据
 const spuInfoList = ref<SpuListModel>([]);
-// 定义加载效果
+// 定义loading加载效果
 const loading = ref<boolean>(false);
-// 定义是否显示sku对话框
+// 定义对话框展示的效果
 const dialogVisible = ref<boolean>(false);
-// 定义spu对象
+// spu对象
 const spuInfo = ref<SpuModel>();
-// 定义skuInfo的列表数据
+// skuinfo的列表数据
 const skuInfoList = ref<SkuInfoListModel>([]);
-// 获取spu对象列表数据
+
+//定义函数,获取数据
 const getSpuInfoList = async (
   page: number = current.value,
   limit: number = pageSize.value
 ) => {
+  // 显示加载效果
   loading.value = true;
   current.value = page;
   pageSize.value = limit;
+  // 调用接口获取数据
   const result = await getSpuInfoListApi({
     page,
     limit,
-    category3Id: categoryStore.category3Id as number,
+    category3Id: categoryStore.getCategory3Id as number,
   });
   //   关闭加载效果
   loading.value = false;
+  // 直接赋值
   spuInfoList.value = result.records;
   total.value = result.total;
 };
-// 三级分类id一变化就是开始调用上面的方法
+// 监视三级分类的数据,三级分类一变化就调用上面的方法
 watch(
   () => categoryStore.category3Id,
   (category3Id) => {
     if (!category3Id) {
-      current.value = 1;
-      pageSize.value = 3;
-      total.value = 0;
-      spuInfoList.value = [];
+      //重置
+      current.value = 1; //页码
+      pageSize.value = 3; //每页条数
+      total.value = 0; //总条数
+      spuInfoList.value = []; //spu列表数据
       return;
     }
     getSpuInfoList();
@@ -146,36 +160,55 @@ watch(
   { immediate: true }
 );
 
-// 点击查看sku按钮的回调函数
-const showSkuInfoList = async (row: SpuModel) => {
+// 点击查看sku按钮点击事件的回调函数
+const clickSkuButton = async (row: SpuModel) => {
   // 显示对话框
   dialogVisible.value = true;
   // 保存spu对象的数据
   spuInfo.value = row;
-  // 调用接口请求数据
+  // 调用接口获取数据
   skuInfoList.value = await getSkuInfoListBySpuIdApi(row.id as number);
 };
 
-// 点击按钮添加spu的回调
-const clickAddSpu = () => {
-  // 显示spuForm组件界面
-  emits("alterShowOrHide", ShowStatus.SPU_ADD);
+// 接收父组件传递过来的自定义事件
+const emit = defineEmits([
+  "setCurrentShowStatus",
+  "setCurrentSpuInfo",
+]);
+
+// 点击按钮添加spu的回调函数
+const showaddSpu = () => {
+  // 显示SpuForm组件
+  emit("setCurrentShowStatus", ShowStatus.SPU_ADD);
 };
-// 点击添加SPu按钮的回调
-const clickAddSku = (row: SpuModel) => {
-  // 显示skuForm组件界面
-  emits("alterShowOrHide", ShowStatus.SPU_ADD);
+// 点击按钮添加sku的回调
+const showaddSku = (row: SpuModel) => {
+  // 显示SpuForm组件
+  emit("setCurrentShowStatus", ShowStatus.SKU_ADD);
+  // 把sku的id和名字传递出去
+  emit('setCurrentSpuInfo',{
+    id:row.id,
+    spuName:row.spuName
+  })
 };
-// 点击修改Spu按钮的回调
-const AddUpSpu = (row: SpuModel) => {
-  // 显示spuList组件
-  emits("alterShowOrHide", ShowStatus.SPU_ADD);
-  emits("setCurrentSpuInfo", {
+// 点击按钮添加spuList的回调
+const showaddUpdateSpu = (row: SpuModel) => {
+  // 显示SpuForm组件
+  emit("setCurrentShowStatus", ShowStatus.SPU_ADD);
+  // 分发父级组件传递过来的自定义事件
+  emit("setCurrentSpuInfo", {
     ...row,
-    spuSaleAttrList: [], //spu的销售属性对象数组
-    spuImageList: [], //spu的图片对象数组
+    spuSaleAttrList: [],
+    spuImageList: [],
   });
 };
+
+// 删除spu
+const deletsSpuInfo = async(spuId:number)=>{
+  await deleteSpuInfoByIdApi(spuId)
+  ElMessage.success('删除成功')
+  getSpuInfoList()
+}
 </script>
 <style scoped>
 </style>

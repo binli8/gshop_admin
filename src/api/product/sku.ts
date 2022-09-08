@@ -13,7 +13,7 @@ enum Api {
     // 根据spu的id获取spu对象的数组列表数据的接口
     GetSkuInfoListBySpuId = '/admin/product/findBySpuId',
     // 根据sku的id获取对应的sku对象的接口地址
-    GetSkuInfoById = '/admin/product/getSkuInfo',
+    GetSkuInfoById = '/admin/product/getSkuById',
     // 根据关键字获取sku对象数组列表数据的接口地址
     GetSkuInfoListByKeyword = '/admin/product/inner/findSkuInfoByKeyword',
     // 根据id数组获取sku对象数组列表数据的接口地址
@@ -48,4 +48,5 @@ export const addSkuInfoApi = (skuInfo: SkuInfoModel) => request.post<any, null>(
 // 修改sku对象的接口函数
 export const updateSkuInfoApi = (skuInfo: SkuInfoModel) => request.post<any, null>(Api.UpdateSkuInfo, skuInfo)
 // 修改或添加sku数据的接口函数
-export const addOrUpdteSkuInfoApi = (skuInfo: SkuInfoModel) => skuInfo.id ? updateSkuInfoApi(skuInfo) : addSkuInfoApi(skuInfo)
+export const addOrUpdateSkuInfoApi= (skuInfo: SkuInfoModel) => skuInfo.id ? updateSkuInfoApi(skuInfo) : addSkuInfoApi(skuInfo)
+

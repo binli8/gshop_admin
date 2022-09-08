@@ -33,34 +33,34 @@ export default {
 <script lang="ts" setup>
 // 引入用户信息的仓库
 import { useUserInfoStore } from '@/stores/userInfo'
-// 引入的是表单组件标签el-form对象的类型
+// 引入表单组件标签el-from对象的类型
 import type { FormInstance } from 'element-plus'
-// 引入nextTick, ref, watch 
+// 引入nextTick和ref和watch
 import { nextTick, ref, watch } from 'vue'
-// 引入获取路由,路由器对象的函数
+// 引入获取路由对象和路由器对象的函数
 import { useRoute, useRouter } from 'vue-router'
-// 获取用户信息的仓库对象
+// 引入用户信息的仓库对象
 const userInfoStore = useUserInfoStore()
 // 获取路由对象
 const route = useRoute()
 // 获取路由器对象
 const router = useRouter()
-// 收集账号和密码
+// 用来搜集账号和密码
 const loginForm = ref({
-  username: 'admin',    //默认的账号
-  password: '111111'    //默认的密码
+  username: 'admin',
+  password: '111111'
 })
 // 加载效果的标识
 const loading = ref(false)
 // 密码或者是文本框的类型
 const passwordType = ref('password')
-// 重定向地址
+// 重定向的地址
 const redirect = ref('')
 // 用来收集文本框的对象
 const passwordRef = ref<HTMLInputElement>()
-// 用来收集form表单的对象
+// 收集form表单的对象
 const formRef = ref<FormInstance>()
-// 用来校验账号的
+// 用来校验账号
 const validateUsername = (rule: any, value: any, callback: any) => {
   if (value.length < 4) {
     callback(new Error('用户名长度不能小于4位'))
@@ -68,7 +68,7 @@ const validateUsername = (rule: any, value: any, callback: any) => {
     callback()
   }
 }
-// 用来校验密码的
+// 用来校验密码
 const validatePassword = (rule: any, value: any, callback: any) => {
   if (value.length < 6) {
     callback(new Error('密码长度不能小于6位'))
@@ -87,7 +87,6 @@ const loginRules = {
 watch(
   route,
   () => {
-    // 如果query参数存在,把当前的地址存起来
     redirect.value = route.query && (route.query.redirect as string)
   },
   { immediate: true }
@@ -104,18 +103,16 @@ const showPwd = () => {
     passwordType.value = 'password'
   }
   nextTick(() => {
-    // focus 获取焦点
+    // 获取焦点
     passwordRef.value?.focus()
   })
 }
-
-// 点击按钮实现登录
+// 点击按钮,实现登录
 const handleLogin = async () => {
-  // 调用表单的验证规则,所有的表单验证都通过了,就会继续向后执行
+  // 调用表单验证规则,所有的表单验证都通过了,就会继续向后执行
   await formRef.value?.validate()
-  // 验证通过了,开启加载标识
+  // 验证通过了,开启的加载标识
   loading.value = true
-  // 取出账号和密码
   const { username, password } = loginForm.value
   try {
     // 通过pinia调用登录的action,传入账号和密码
