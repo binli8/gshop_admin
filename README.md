@@ -1,16 +1,281 @@
-# Vue 3 + TypeScript + Vite
+# vue3中后台项目总结
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 项目中用到的技术栈
 
-## Recommended IDE Setup
+#### vue3 + Vite + Vue Router4 +  Pinia + TS +element-plus + Ajax + Apache ECharts
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+## 接口文档
 
-## Type Support For `.vue` Imports in TS
+#### swagger-ui
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+## 项目功能：
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+### 一、登录与退出登录模块
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+#### (一)、登录页面
+
+需求：用户输入点击登录按钮，跳转首页
+思路：1.  先封装登录相关的接口类型，然后封装接口地址和接口函数
+     2. 配置代理服务器 
+     3.  进行axios二次封装，在请求拦截器中的请求头上自动携带token
+     4. 定义一个文件，使用localStorage来存储token信息，分别暴露出读取、存储、删除token的方法
+     4.  使用pinia管理用户信息，发送请求，获取用户登录信息，并存储到state中
+在login组件中，引入用户信息的仓库，点击登录按钮，验证用户登录信息是否正确，验证通过了，通过pinia调用登录的action，传入帐号和密码，登录成功跳转路由
+
+#### (二)、退出登录
+
+        需求：点击退出登录清除用户信息，删除本地token，跳转登陆页面
+
+思路：在pinia中引入退出接口函数，如果有登录信息，发送请求，删除local中保存的token，重置用户信息
+在Navbar组件中，引入用户信息的仓库，点击退出按钮时，调用reset方法，跳转路由
+
+
+
+### 二、首页模块：
+
+首页主要是大量的使用了数据可视化。
+
+#### 需求：
+
+通过大量的图表，展示信息
+
+#### 思路：
+
+主要通过Apache ECharts的第三方库实现，该库提供了大量可视化图表。项目中用到了饼状图，折线图，柱状图三种图标。在首页模块中运用了大量的ECharts配置项，例如：xAxis、yAxis、tooltip、series、title、grid、legend
+
+#### 实现方式：
+
+首先将首页拆成了三个部分: 头部组件，中间部分组件，底部组件。
+
+头部组件又继续拆分：分成了四个组件，代表了四个图表。在这四个组件中具体实现主要就是，引入仓库，获取数据。然后通过直接给计算属性computed赋值，将得到值放入模板中进行展示。
+
+中间部分组件和底部组件：引入仓库，获取数据。但是数据不能直接使用，然后通过计算属性computed将数据计算成需要的，再将值放入模板中进行展示。
+
+首页图表拆分成多个组件因为需要将所用数据存入pinia中方便调用。
+
+
+
+### 三、权限管路模块：
+
+#### 需求：
+
+什么样的角色，拿着直接的权限，看自己能看的页面。
+
+#### 思路：
+
+通过路由控制权限和实现按钮的权限管理进行控制
+
+#### 实现方式：
+
+路由的的权限控制：
+
+将路由拆分为了静态路由，动态路由，任意路由
+
+静态路由：是所有用户都可以看到的部分。
+
+动态路由；是用户登录后，根据用户的权限，可以看到的部分。
+
+任意路由：不登录也可以看到的部分。
+
+然后进行路由注册。
+
+路由的权限控制首先进行路由鉴权：
+过滤路由：
+路由名字,动态路由这两个要进行对比,最终过滤出来的路由是用户应该可以看到的菜单,过滤时要进行递归过滤，进行深层次的过滤。
+注册路由：
+将过滤后得到的新的路由对象数组进行注册，此时用户通过输入路由地址就可以看到对应的组件内容了
+重置路由：
+把过滤后的路由对象数组存储起来，用户就可以在页面中看到菜单了
+
+然后在进行按钮鉴权：
+用户登录后，会有一个buttons数组是字符串类型的按钮标识数组
+决定了当前用户查看菜单时，可以操作的按钮。
+按钮的鉴权实现是通过自定义指令实现的
+判断传进来的标识信息是否在内部获取的标识数组中，如果不在，设置当前使用的这个自定义的按钮移除。
+
+### 四、商品管理模块之品牌管理：
+
+#### 需求：
+
+页面加载完毕后显示，品牌名称，品牌LOGO，操作以及添加新的品牌。
+
+#### 思路：
+
+首先在element-plus 中找到合适的表格。然后发送请求，获取数据，展示数据。
+
+#### （一）、品牌管理界面显示品牌列表数据
+
+   需求：
+
+页面加载后显示所有的列表数据，以表格的方式展示
+
+ 思路：
+
+先封装品牌相关的接口类型，然后封装接口地址和接口函数。
+在trademark组件中，页面加载后，在onMounted钩子中，调用封装的函数，在函数中调用接口获取品牌列表的数据，绑定到表格的data中。
+
+#### （三）、添加与修改对话框
+
+   需求：
+
+点击添加与修改按钮显示对话框
+   思路：
+
+使用element-plus组件库，搭建组件，点击按钮，改变标识，使用Object.assign，将数据进行拷贝与还原，清理所有的表单验证信息。
+
+#### （四）、添加或者修改品牌操作
+
+  需求：
+
+点击添加与修改按钮，在弹出的对话框中，添加或修改品牌
+
+思路：
+
+1.在弹出的对话框中，点击上传图片对话框，调用上传图片所需要的回调函数，存储上传成功的图片的地址，清理掉图片的验证信息，上传图片前要验证图片的类型与大小。
+
+2.将图片和品牌名称，保存到trademark对象中，点击保存按钮，进行表单验证，验证通过调用添加或修改品牌接口，刷新页面，关闭对话框
+
+#### （五）、删除品牌操作
+
+需求：点击删除按钮，删除当前点击的这一行品牌对象
+
+ 思路：使用element-plus组件库，点击按钮时，传入当前trademark对象，弹出提示框，向用户提示是否要删除，用户点击确定，调用删除品牌接口，刷新页面
+
+### 五、商品管理模块之平台属性管理：
+
+#### 需求：
+
+首先需要展示三级分类，属性管理界面显示平台属性列表数据和添加或修改平台属性列表数据。
+
+#### 思路：
+
+由于后续的SPU页面也需要三级分类，所有将三级分类，单独拆分成了一个公共组件，然后在页面加载完毕，就展示属性管理页面和平台属性列表。
+
+#### （一）、三级分类选择
+
+需求：
+
+动态显示三级分类选择下拉框，通过点击下拉框，获取数据
+
+思路：
+
+1.先封装三级分类相关的接口类型，然后封装接口地址和接口函数
+
+2.使用element-plus组件库，搭建全局组件(多个组件中应用)
+
+3.创建三家分类相关的pinia函数，定义好三级分类相关的数据，引入接口函数，在actions中定义三级分类请求函数，当函数被调用时，存储请求回来的数据。
+
+4.在attr组件中使用CategorySelector组件，在CategorySelector组件中获取分类的仓库对象，在onMounted钩子中，通过仓库对象调用封装的一级分类函数获取一级分类列表数据，把获取到的数据遍历展示到option中，并通过计算属性分别过去二级和三级分类列表数据，把获取到的数据依次遍历展示到option中。
+
+####  （二）、属性管理界面显示平台属性列表数据
+
+需求：
+
+当三级分类列表渲染完成后，显示所有的列表数据，以表格的方式。
+思路：
+
+1.使用element-plus组件库，在attr组件中搭建表格与分页。
+
+2.当三级分类列表渲染完成后，三级分类id存在时，在watch中调用封装的函数，在该函数中调用接口获取获取对应的平台属性对象数据，绑定到表格的data中
+
+####  （三）、添加或修改平台属性列表数据
+
+需求：
+
+点击添加或修改按钮，展示操作界面，数据渲染完成后保存数据。
+
+思路及实现：
+
+使用element-plus组件库，搭建界面。
+
+点击添加平台属性按钮，触发回调函数，使用Object.assign重置attr，展示操作界面。
+
+ 当属性名 input 输入值时，点击添加属性值按钮，设置当前得这一行的文本框显示出来，自动获取焦点，往属性值列表中push数据，
+
+  当点击删除按钮时，使用splice方法从当前行的列表中删除数据。
+
+点击修改平台属性按钮触发回调函数，传入当前行的row，使用Object.assign与cloneDeep进行深拷贝操作，展示操作界面。
+ 点击属性值名称时，isShowEdit变为true，切换编辑模式，显示输入框后, 自动获取焦点。进行修改操作，失去焦点时判断当前这一行中得内容是否存在，如果不存在，则移除，isShowEdit变为false，切换查看模式。
+当点击删除按钮时，使用splice方法从当前行的列表中删除数据。
+3.点击保存按钮时，进行更新一下三级分类的id、判断平台属性值数组是否有数据、过滤没有值的数据及干掉isShowEdit属性一系列操作，这些操作完成后调用接口，刷新列表。
+
+####  （四）、删除平台属性列表数据
+
+需求：
+
+点击删除按钮，删除数据
+
+思路：
+
+点击删除按钮，传入id，调用接口，删除数据，刷新列表
+
+
+
+### 六、商品管理模块之SPU：
+
+#### （一）、三级分类选择：
+
+同商品管理模块之平台属性管理的三级分类一样
+
+#### （二）、添加SPU
+
+  需求：
+
+点击添加sku按钮，展示操作界面，数据渲染完成后保存数据
+
+思路及实现：
+
+ 1.使用element-plus组件库，搭建SkuForm组件界面
+
+2.点击添加Sku按钮触发回调函数，调用父组件传过来的setCurrentShowStatus方法改变标识，显示SkuForm组件界面，调用父组件传过来的setCurrentSpuInfo方法，把spu的id和名字传递给SkuForm组件
+
+在SpuForm组件页面加载后，在onMounted钩子中，调用接口，根据3级分类id获取所有的平台属性数据、根据spuId获取spu对象下所拥有的销售属性数据、根据spuId获取spu对象下所拥有的图片数组数据，存储到对应的列表数组中，用与数据的展示。
+
+将获取到的图片数组数据存好后，使用排他思想，改变isDefault标识，设置第一个图片是默认的效果，调用toggleRowSelection方法设置表格中第一行的内容是选中的状态效果，存储当前的这个图片的地址。
+
+保存sku对象，点击保存按钮，进行表单验证，验证通过后：
+
+调用接口，将skuInfo对象进行重新构造，符合要求后，发保存/更新skuInfo的请求请求，
+做后续的响应处理，并跳转页面。
+
+#### （三）、展示SPU列表
+
+需求：
+
+三级分类选择完毕，展示出对应的SPU
+
+实现及思路：
+
+三级分类列表渲染完成后，三级分类id存在时，在watch中调用封装的函数，在该函数中调用接口获取对应的spu对象列表数据据，绑定到表格的data中
+
+
+
+### 七、商品管理模块之SKU：
+
+需求：
+
+页面加载完毕展示SKU表格，还有上下架、修改SKU、展示SKU、删除SKU，四个按钮。
+
+实现及思路：
+
+#### （一）、展示sku表格
+
+在sku组件中，页面加载后，在onMounted钩子中，调用封装的函数，在函数中调用接口获取sku列表的数据，绑定到表格的data中。
+
+#### （二）、上下架
+
+ 点击上下架按钮，传入当前row，与上下架标识，判断是否为1，为1调用上架接口，发送请求，不为1，调用下架接口，发送请求，更新列表数据
+
+#### （三）、修改SKU
+
+此功能没做
+
+#### （四）、展示SKU
+
+1.使用element-plus组件库，在sku组件中使用抽屉
+
+2.点击查看按钮，传入当前row，改变标识，显示sku对象的抽屉，调用接口，根据sku的id获取skuInfo对象的数据，存储到skuInfo对象中，动态的展示数据
+
+#### （五）、删除SKU
+
+点击删除按钮，传入skuId，调用接口，删除数据，刷新列表
